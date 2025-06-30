@@ -1,0 +1,11 @@
+{
+  "task_name": "Create Okta User",
+  "description": "Create a new OKTA user profile!",
+  "questions": [
+    "What is the new okta user's first name?*",
+    "What is the new okta user's last name?*",
+    "What is the new okta user's email?*",
+    "What is the user's job title?",
+    "What's the user's username?*"
+  ]
+}

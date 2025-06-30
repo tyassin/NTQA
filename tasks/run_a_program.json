@@ -1,0 +1,17 @@
+{
+  "task_name": "Run a program",
+  "description": "Run any system program with arguments.",
+  "questions": [
+    "What program do you want to run?*", 
+    "What is the first argument?",
+    "What is the second argument?"
+  ],
+  "application": [
+    {
+      "name": "cmd",
+      "path": "C:\\Windows\\System32\\cmd.exe",
+      "after": "time_sleep",
+      "after-args": "5"
+    }
+  ]
+}

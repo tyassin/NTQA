@@ -1,0 +1,9 @@
+{
+  "task_name": "Create User Profile",
+  "description": "Create a user profile from user details.",
+  "questions": [
+    "What is the user's full name?*",
+    "What is the user's email?",
+    "What is the user's job title?*"
+  ]
+}
