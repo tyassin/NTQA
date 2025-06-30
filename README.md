@@ -1,5 +1,4 @@
-# 🧠 NTQA
-Narrative-Topics-Questions-Answers
+# 🧠 NTQA: Narrative-Topics-Questions-Answers
 
 ![Python](https://img.shields.io/badge/python-3.8%2B-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
@@ -10,18 +9,25 @@ An intelligent command-line assistant powered by Google's Gemini API. It reads d
 
 ## ✅ Features
 
-- Dynamic task loading from JSON files (`tasks/`)
-- Conversational question/answer flow
-- Required vs optional field detection
+- Dynamic task loading from JSON files (`tasks/`).
+- Conversational question/answer flow.
+- Required vs optional field detection.
 - Handles "run", "automate", "exit", "quit", etc.
-- Structured JSON output for integration with other systems
-- Simulation of task execution
+- Structured JSON output for integration with other systems.
+- Simulation of task execution.
 
 ---
-##  ✅ Workflow
+## 📌Workflow: How it Works
+- Narrative Input: Users describe what they want to do in natural language.
+- Template Matching: The system finds a local JSON template for the task.
+- Question Extraction: Required questions are checked for answers.
+- Conversational Loop: If any required answer is missing, the system asks for it.
+- Task Execution: Once all answers are ready, the task runs in a subprocess.
+- AI Summary: Gemini summarizes the output, and users can ask more about it.
+
 <img src="./images/NTQA_Workflow.png">
----
 
+---
 ## 📁 Project Structure
 
 ```
@@ -153,6 +159,7 @@ You may also type 'automate' or 'run' to execute the completed task.
 
 Use:
 ```
+go back
 exit
 quit
 bye
