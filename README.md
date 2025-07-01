@@ -171,9 +171,13 @@ To exit the assistant.
 
 ## 📞 Support
 
-For help or bugs, feel free to contact the project maintainer.
----
+💬 Need Help or Found a Bug?
+Feel free to open a new issue to report bugs or ask for help.
 
+🙌 Want to Contribute?
+You're welcome to submit a Pull Request (PR) to improve this project.
+
+---
 ## 🤝 Contributing
 
 Contributions, suggestions, and improvements are welcome!
