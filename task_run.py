@@ -96,8 +96,6 @@ def print_final(task_name, answers):
     print("👋 Exiting Task Assistant.")
 
 def try_parse_json(text):
-    print ("Tarek instid try_parse_json")
-    print (text)
     # Strip markdown code block if present
     if text.strip().startswith("```json"):
         text = text.strip()[7:].strip()  # remove ```json and leading space/newlines
@@ -226,7 +224,6 @@ def main():
             task_name = parsed.get("task")
             collected = merge_answers(collected, parsed.get("data", {}))
         else:
-            print(' Tarek this is the entire ' )
             print(response.text)
 
         while True:
@@ -237,7 +234,6 @@ def main():
                 break
 
             if collected:
-                print(' Tarek this is the collected ' )
                 print(collected)
             user_input = ask_user("Your answer (or type exit):")
             if user_input.lower() in ['exit', 'quit', 'bye']:
