@@ -121,7 +121,7 @@ python task_run.py --api-key=YOUR_GEMINI_API_KEY
 > create a new okta user
 
 📝 What is the new okta user's first name?
-> John
+> Joe
 
 📝 What is the new okta user's last name?
 > Doe
@@ -135,7 +135,7 @@ python task_run.py --api-key=YOUR_GEMINI_API_KEY
 {
   "task": "create_okta_user",
   "data": {
-    "what_is_the_new_okta_users_first_name": "John",
+    "what_is_the_new_okta_users_first_name": "Joe",
     ...
   }
 }
