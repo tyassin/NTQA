@@ -127,7 +127,7 @@ python task_run.py --api-key=YOUR_GEMINI_API_KEY
 > Doe
 
 📝 What is the new okta user's email?
-> john.doe@example.com
+> joe.doe@example.com
 
 ...
 
