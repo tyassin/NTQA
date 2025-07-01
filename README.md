@@ -76,7 +76,7 @@ pip install google-generativeai
 Run the script using:
 
 ```bash
-python task_run.py --api-key=YOUR_GEMINI_API_KEY
+python task_run.py --api-key YOUR_GEMINI_API_KEY
 ```
 
 > Optional: You can change the Gemini model with `--model=gemini-1.5-pro` or other versions.
