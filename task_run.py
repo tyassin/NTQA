@@ -37,9 +37,10 @@ class TaskManager:
         return tasks
 
     def clean_key(self, question):
-        cleaned = question.strip().rstrip("*").rstrip("?").lower()
-        cleaned = re.sub(r"[^a-z0-9\s_]", "", cleaned)
-        return re.sub(r"\s+", "_", cleaned)
+        # cleaned = question.strip().rstrip("*").rstrip("?").lower()
+        # cleaned = re.sub(r"[^a-z0-9\s_]", "", cleaned)
+        # return re.sub(r"\s+", "_", cleaned)
+        return question;
 
     def get_required_keys(self, task):
         return [k for k, q in task["key_map"].items() if q.strip().endswith("*")]
@@ -110,28 +111,6 @@ def try_parse_json(text):
     print ("DONE!!!!")
     return None
 
-def try_parse_json1(text):
-    """
-    Extract and parse the first JSON object from a text string.
-    """
-    try:
-        # Match the first {...} block using a simple bracket balance algorithm
-        start = text.find('{')
-        if start == -1:
-            return None
-        brace_count = 0
-        for i in range(start, len(text)):
-            if text[i] == '{':
-                brace_count += 1
-            elif text[i] == '}':
-                brace_count -= 1
-            if brace_count == 0:
-                json_str = text[start:i+1]
-                return json.loads(json_str)
-    except Exception as e:
-        print("⚠️ Failed to extract JSON:", e)
-    return None
-
 def run_task_simulation(task_name, data):
     print(f"\n⚙️ Now running task: {task_name or 'unknown'} with data:")
     print(json.dumps(data, indent=2))
@@ -144,7 +123,7 @@ def run_task_simulation(task_name, data):
     args = cmd_list[1:]
     try:
         print(f"▶️ Executing: {command} {' '.join(args)}\n")
-        result = subprocess.run([command] + args, capture_output=True, text=True)
+        result = subprocess.run([command] + args, capture_output=True, shell=True, text=True)
         output = result.stdout.strip()
         error = result.stderr.strip()
         print("📤 Output:")

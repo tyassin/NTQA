@@ -25,7 +25,7 @@ An intelligent command-line assistant powered by Google's Gemini API. It reads d
 - Task Execution: Once all answers are ready, the task runs in a subprocess.
 - AI Summary: Gemini summarizes the output, and users can ask more about it.
 
-<img src="./images/NTQA_Workflow.png">
+<img src="./images/NTQA_Workflow_Handwritten.png">
 
 ---
 ## 📁 Project Structure
