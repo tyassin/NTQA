@@ -2,18 +2,23 @@ import os
 import re
 import json
 import argparse
-import google.generativeai as genai
+from google import genai
 import subprocess
+import shlex
+import readline
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # === CLI ARGUMENTS ===
 parser = argparse.ArgumentParser(description="Run Task Assistant with Gemini")
-parser.add_argument('--api-key', type=str, required=True, help="Gemini API key")
-parser.add_argument('--model', type=str, default="gemini-2.0-flash", help="Gemini model to use")
+parser.add_argument('--api-key', type=str, default="", help="Gemini API key")
+parser.add_argument('--model', type=str, default="gemini-3.1-flash-lite", help="Gemini model to use")
 args = parser.parse_args()
 
 # === CONFIGURE GEMINI ===
-genai.configure(api_key=args.api_key)
-model = genai.GenerativeModel(args.model)
+client = genai.Client(api_key=args.api_key)
 
 TASK_FOLDER = "tasks"
 
@@ -40,7 +45,7 @@ class TaskManager:
         # cleaned = question.strip().rstrip("*").rstrip("?").lower()
         # cleaned = re.sub(r"[^a-z0-9\s_]", "", cleaned)
         # return re.sub(r"\s+", "_", cleaned)
-        return question;
+        return question
 
     def get_required_keys(self, task):
         return [k for k, q in task["key_map"].items() if q.strip().endswith("*")]
@@ -55,23 +60,36 @@ class TaskManager:
         base = (
             "You are a task assistant that helps users complete dynamic tasks.\n\n"
             "Instructions:\n"
-            "- A user will describe a task.\n"
-            "- Identify the task name and required questions. "
+            "- A user will describe one or more tasks.\n"
+            "- Identify the task names and required questions for each task.\n"
             "- Apply all questions to the given prompt to identify answers if found.\n"
-            "- Ask only one unanswered required question at a time.\n"
+            #"- If the user asks you to execute the task, execute it and return the result.\n"
+            #"- Everything in the prompt is a potential answer to the questions, including the task name itself, and the questions themselves.\n"
+            #"- Everything is found in the prompt, including the answers to the questions, and the questions themselves. If 100% not, then ask for the missing questions.\n"
+            "- Everything is found in the prompt.\n"
+            "- Ask only one unanswered required question at a time across all identified tasks.\n"
             "- Don't ask non-required questions, unless the user provides the question and its answer.\n"
-            "- If all required questions are answered, return:\n"
-            "  {\n"
-            '    "task": "task_name",\n'
-            '    "data": {\n'
-            '      "key1": "value1"\n'
+            "- If all required questions for all identified tasks are answered, return a JSON list of completed tasks:\n"
+            "  [\n"
+            "    {\n"
+            '      "task": "task_name_1",\n'
+            '      "data": {\n'
+            '        "key1": "value1"\n'
+            '      }\n'
+            "    },\n"
+            "    {\n"
+            '      "task": "task_name_2",\n'
+            '      "data": {\n'
+            '        "key2": "value2"\n'
+            '      }\n'
             "    }\n"
-            "  }\n"
-            "- Only print JSON when it's complete. Never partial.\n"
+            "  ]\n"
+            "- If only a single task is identified and completed, you can return a single JSON object or a list containing it.\n"
+            "- Only print JSON when all identified tasks are complete. Never partial.\n"
             "- If user says exit/quit/bye, print the final JSON (complete or not) and say thank you.\n"
             "- After printing final JSON, say:\n"
             "  💬 How can I help more? Do you still need me to change the query or start a new one?\n"
-            '  You may also type "automate" or "run" to execute the completed task.\n'
+            '  You may also type "automate" or "run" to execute the completed task(s).\n'
             "\nTasks:"
         )
         for t in self.tasks:
@@ -90,9 +108,9 @@ def merge_answers(existing, new_data):
 def is_complete(required_keys, answers):
     return all(k in answers and str(answers[k]).strip() for k in required_keys)
 
-def print_final(task_name, answers):
+def print_final(tasks):
     print("\n📦 Final JSON:")
-    print(json.dumps({"task": task_name or "unknown_task", "data": answers}, indent=2))
+    print(json.dumps(tasks, indent=2))
     print("\n✅ Thank you for using Task Assistant service.")
     print("👋 Exiting Task Assistant.")
 
@@ -102,7 +120,7 @@ def try_parse_json(text):
         text = text.strip()[7:].strip()  # remove ```json and leading space/newlines
     if text.strip().endswith("```"):
         text = text.strip()[:-3].strip()  # remove ending ```
-    match = re.search(r"\{.*\}", text, re.DOTALL)
+    match = re.search(r"(\[.*\]|\{.*\})", text, re.DOTALL)
     if match:
         try:
             return json.loads(match.group(0))
@@ -111,19 +129,61 @@ def try_parse_json(text):
     print ("DONE!!!!")
     return None
 
-def run_task_simulation(task_name, data):
+def run_task_simulation(task_name, data, tm=None, context=None):
+    if context is None:
+        context = {}
+        
     print(f"\n⚙️ Now running task: {task_name or 'unknown'} with data:")
     print(json.dumps(data, indent=2))
 
-    cmd_list = list(data.values())
-    if not cmd_list:
-        print("❌ No command to run.")
-        return
-    command = cmd_list[0]
-    args = cmd_list[1:]
+    task_config = tm.get_task_by_name(task_name) if tm else None
+    command_template = task_config.get("command") if task_config else None
+
+    if command_template:
+        # Support multi-line commands defined as a JSON array
+        if isinstance(command_template, list):
+            command_template = "\n".join(command_template)
+            
+        command = command_template
+        if task_config:
+            questions = task_config.get("questions", [])
+            for i, q in enumerate(questions):
+                ans = data.get(q, "")
+                # Support ${answer1}, ${answer2}, etc. (1-indexed)
+                command = command.replace(f"${{answer{i+1}}}", str(ans))
+                # Also support exact question string replacement: ${What is the new okta group name?*}
+                command = command.replace(f"${{{q}}}", str(ans))
+                
+        # Support context variable replacement (e.g. ${Create Okta Group.id})
+        matches = re.findall(r'\$\{([^}]+)\}', command)
+        for match in matches:
+            if '.' in match:
+                ref_task, ref_key = match.split('.', 1)
+                if ref_task in context and isinstance(context[ref_task], dict):
+                    val = context[ref_task].get(ref_key, "")
+                    command = command.replace(f"${{{match}}}", str(val))
+        
+        # If the command template didn't use variable substitution, fallback to appending the JSON string
+        if "${" not in command_template:
+            json_data_str = json.dumps(data)
+            command = f"{command_template} {shlex.quote(json_data_str)}"
+            
+        cmd_args = []
+    else:
+        cmd_list = list(data.values())
+        if not cmd_list:
+            print("❌ No command to run.")
+            return
+        command = cmd_list[0]
+        cmd_args = cmd_list[1:]
+
     try:
-        print(f"▶️ Executing: {command} {' '.join(args)}\n")
-        result = subprocess.run([command] + args, capture_output=True, shell=True, text=True)
+        if command_template:
+            print(f"▶️ Executing: {command}\n")
+            result = subprocess.run(command, capture_output=True, shell=True, text=True)
+        else:
+            print(f"▶️ Executing: {command} {' '.join(cmd_args)}\n")
+            result = subprocess.run([command] + cmd_args, capture_output=True, shell=True, text=True)
         output = result.stdout.strip()
         error = result.stderr.strip()
         print("📤 Output:")
@@ -131,11 +191,19 @@ def run_task_simulation(task_name, data):
         if error:
             print("⚠️ Errors:")
             print(error)
+            
+        # Store JSON output in context for future tasks
+        if output:
+            try:
+                parsed_output = json.loads(output)
+                context[task_name] = parsed_output
+            except json.JSONDecodeError:
+                pass
 
         # ✨ Send summary request to Gemini
         # === Send output to new Gemini convo ===
         print("\n💬 Sending output to Gemini for analysis...")
-        execution_convo = model.start_chat()
+        execution_convo = client.chats.create(model=args.model)
         summary_prompt = f"The output of the command `{command}` is:\n\n{output or '[No output]'}"
         if error:
             summary_prompt += f"\n\nThere were also errors:\n{error}"
@@ -146,9 +214,9 @@ def run_task_simulation(task_name, data):
 
         # Loop for user interaction in execution mode
         while True:
-            follow_up = ask_user("(Execution Mode) Ask about result or type 'go back':")
-            if follow_up.lower() in ['go back']:
-                print("🔙 Returning to main task assistant...")
+            follow_up = ask_user("(Execution Mode) Ask about result or type 'Continue' to executre the next task:")
+            if follow_up.lower() in ['continue']:
+                print("🔙 Continuing to the next task...")
                 break
             reply = execution_convo.send_message(follow_up)
             print("🤖", reply.text.strip())
@@ -158,90 +226,128 @@ def run_task_simulation(task_name, data):
         print(f"❌ Error while executing: {e}")
     print("✅ Task completed.\n")
 
-last_task_name = None
-last_collected = {}
+last_tasks = []
 
 def main():
-    global last_task_name, last_collected
+    global last_tasks
     tm = TaskManager(TASK_FOLDER)
     system_prompt = tm.generate_prompt()
 
     print(f"🤖 Gemini Task Assistant Initialized using model: {args.model}")
     while True:
-        collected = {}
-        task_name = None
-        convo = model.start_chat(history=[{"role": "user", "parts": [system_prompt]}])
-        if last_task_name:
-            sys_prompt = "🧠 What do you want to do? (type 'exit' to quit, or 'run'/'automate' to execute the last task)"
+        convo = client.chats.create(model=args.model, history=[{"role": "user", "parts": [{"text": system_prompt}]}])
+        if last_tasks:
+            sys_prompt = "🧠 What do you want to do? (type 'exit' to quit, or 'run'/'automate' to execute the last task(s))"
         else:
             sys_prompt = "🧠 What do you want to do? (type 'exit' to quit)"
         
         user_input = ask_user(sys_prompt)
         if user_input.lower() in ['exit', 'quit', 'bye']:
-            print_final(task_name, collected)
+            print_final(last_tasks)
             break
 
         if user_input.lower() in ['run', 'automate']:
-            if last_task_name and last_collected:
-                print("⚠️ This is 1st.")
-                task_config = tm.get_task_by_name(last_task_name)
-                run_task_simulation(last_task_name, last_collected)
+            if last_tasks:
+                print(f"⚠️ Running {len(last_tasks)} task(s) in sequence...")
+                execution_context = {}
+                for task_info in last_tasks:
+                    run_task_simulation(task_info.get("task"), task_info.get("data", {}), tm, execution_context)
             else:
                 print("⚠️ No previous task found to run.")
             continue
 
         response = convo.send_message(user_input)
 
-        if hasattr(response, "usage_metadata"):
-            print("🔍 Token usage:", response.usage_metadata)
-        else:
-            def estimate_token_count(text): return int(len(text.split()) * 1.3)
-            print(f"🔍 Estimated token usage: ~{estimate_token_count(user_input)} tokens")
+        # if hasattr(response, "usage_metadata"):
+        #     print("🔍 Token usage:", response.usage_metadata)
+        # else:
+        #     def estimate_token_count(text): return int(len(text.split()) * 1.3)
+        #     print(f"🔍 Estimated token usage: ~{estimate_token_count(user_input)} tokens")
 
         parsed = try_parse_json(response.text)
+        
+        # Check if complete
+        is_completed_flow = False
         if parsed:
-            task_name = parsed.get("task")
-            collected = merge_answers(collected, parsed.get("data", {}))
-        else:
-            print(response.text)
+            if isinstance(parsed, list):
+                all_complete = True
+                for t_parsed in parsed:
+                    t_name = t_parsed.get("task")
+                    t_data = t_parsed.get("data", {})
+                    task = tm.get_task_by_name(t_name) if t_name else None
+                    if not task or not is_complete(tm.get_required_keys(task), t_data):
+                        all_complete = False
+                        break
+                if all_complete:
+                    last_tasks = parsed
+                    is_completed_flow = True
+            elif isinstance(parsed, dict):
+                t_name = parsed.get("task")
+                t_data = parsed.get("data", {})
+                task = tm.get_task_by_name(t_name) if t_name else None
+                if task and is_complete(tm.get_required_keys(task), t_data):
+                    last_tasks = [parsed]
+                    is_completed_flow = True
 
-        while True:
-            task = tm.get_task_by_name(task_name) if task_name else None
-            if task and is_complete(tm.get_required_keys(task), collected):
-                last_task_name = task_name
-                last_collected = collected.copy()
-                break
+        if not is_completed_flow:
+            if not parsed:
+                print(response.text)
+            else:
+                print(json.dumps(parsed, indent=2))
 
-            if collected:
-                print(collected)
+        while not is_completed_flow:
             user_input = ask_user("Your answer (or type exit):")
             if user_input.lower() in ['exit', 'quit', 'bye']:
-                print_final(task_name, collected)
+                print_final(last_tasks)
                 return
 
             if user_input.lower() in ['run', 'automate']:
-                if last_task_name and last_collected:
-                    print("⚠️ This is 2nd.")
-                    run_task_simulation(last_task_name, last_collected)
+                if last_tasks:
+                    print(f"⚠️ Running {len(last_tasks)} task(s) in sequence...")
+                    execution_context = {}
+                    for task_info in last_tasks:
+                        run_task_simulation(task_info.get("task"), task_info.get("data", {}), tm, execution_context)
+                else:
                     print("⚠️ No previous task found to run.")
                 continue
 
             response = convo.send_message(user_input)
 
-            if hasattr(response, "usage_metadata"):
-                print("🔍 Token usage:", response.usage_metadata)
-            else:
-                def estimate_token_count(text): return int(len(text.split()) * 1.3)
-                print(f"🔍 Estimated token usage: ~{estimate_token_count(user_input)} tokens")
+            # if hasattr(response, "usage_metadata"):
+            #     print("🔍 Token usage:", response.usage_metadata)
+            # else:
+            #     def estimate_token_count(text): return int(len(text.split()) * 1.3)
+            #     print(f"🔍 Estimated token usage: ~{estimate_token_count(user_input)} tokens")
 
             parsed = try_parse_json(response.text)
             if parsed:
-                task_name = parsed.get("task", task_name)
-                collected = merge_answers(collected, parsed.get("data", {}))
-            else:
-                print(response.text)
+                if isinstance(parsed, list):
+                    all_complete = True
+                    for t_parsed in parsed:
+                        t_name = t_parsed.get("task")
+                        t_data = t_parsed.get("data", {})
+                        task = tm.get_task_by_name(t_name) if t_name else None
+                        if not task or not is_complete(tm.get_required_keys(task), t_data):
+                            all_complete = False
+                            break
+                    if all_complete:
+                        last_tasks = parsed
+                        is_completed_flow = True
+                elif isinstance(parsed, dict):
+                    t_name = parsed.get("task")
+                    t_data = parsed.get("data", {})
+                    task = tm.get_task_by_name(t_name) if t_name else None
+                    if task and is_complete(tm.get_required_keys(task), t_data):
+                        last_tasks = [parsed]
+                        is_completed_flow = True
 
-        print_final(task_name, collected)
+            if not is_completed_flow:
+                if not parsed:
+                    print(response.text)
+                else:
+                    print(json.dumps(parsed, indent=2))
+
+        print_final(last_tasks)
 
 if __name__ == "__main__":
     main()

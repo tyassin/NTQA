@@ -1,0 +1,12 @@
+{
+    "task_name": "Assign User to Group",
+    "description": "Assign an existing Okta user to an Okta group.",
+    "command": [
+        "curl -sS -X PUT \\",
+        "  -H \"Accept: application/json\" \\",
+        "  -H \"Content-Type: application/json\" \\",
+        "  -H \"Authorization: SSWS $OKTA_API_TOKEN\" \\",
+        "  \"$OKTA_URL/api/v1/groups/${Create Okta Group.id}/users/${Create Okta User.id}\""
+    ],
+    "questions": []
+}

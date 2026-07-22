@@ -1,0 +1,18 @@
+{
+    "task_name": "Update Okta User",
+    "description": "Update an Okta user profile with a value for a specific attribute",
+    "_command_old": "python okta_user_account.py update",
+    "command": [
+        "curl -sS -X POST \\",
+        "  -H \"Accept: application/json\" \\",
+        "  -H \"Content-Type: application/json\" \\",
+        "  -H \"Authorization: SSWS $OKTA_API_TOKEN\" \\",
+        "  -d '{\"profile\": {\"${answer2}\": \"${answer3}\"}}' \\",
+        "  \"$OKTA_URL/api/v1/users/${answer1}\""
+    ],
+    "questions": [
+        "What is the email or ID of the user to update?*",
+        "What is the name of the attribute to update?*",
+        "What is the value to set for this attribute?*"
+    ]
+}
