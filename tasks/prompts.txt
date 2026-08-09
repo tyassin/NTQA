@@ -1,0 +1,19 @@
+I want to add a new attribute to Okta schema call it Tarek_Test_02. It is a string and use a title "Tarek TYest". Next you need to add a new okta user to test this attribute. The new user is Tare Yn. his username and email are firstname on test.com. After go ahead and set the new attribute for this user to be "TestingMayAttribute Is Wrong".
+
+I want to add a new attribute to Okta schema call it address_four. It is a string and uses a title "Address Four". Next you need to add a new okta user to test this attribute. The new user is Hadi Smith. his username and email are equals and it is the first name on gmail. After go ahead and set the new attribute for this user to be "Address Four Is correct". Also, and a new group "zone_four" for "Users living on Zone Four" and assign the user to the group.
+
+I want to add a new attribute to Okta schema call it address_five. It is a string and uses a title "Address Five". Next you need to add a new okta user to test this attribute. The new user is Hazem Smith. The username/email are equal to first name on gmail. After that set the new attribute to this user as "Address Five Is correct". Also, add a new group "zone_five" for "Users living on Zone Five" and assign the user to the group. Everything is found in the prompt.
+
+I need to create a new okta user named Sarah Connor. Her email and username are sarah.connor@gmail.com. After creating her, update her profile to set the attribute 'address_four' to 'Sarah Address'. Then, search for the existing group named 'zone_four' and assign her to it. Everything is found in the prompt.
+
+I need to create a new okta user named John Doe. His email and username are [EMAIL_ADDRESS]. After creating him, update his profile to set the attribute 'address_four' to 'John Address'. Then, search for the existing group named 'zone_four' and assign him to it. Everything is found in the prompt.
+
+create "Charlesonsss Smith" as a new okta user. His username and email is firstname dot lastname on gmail. Then, assign him to "Smith_Family" group. Everything is found in the prompt for all required fields.
+
+ Create the group if it is not found and use group name as description too.
+
+Create "Charlesons Smith" as a new okta user. His username and email are firstname dot lastname on gmail. Then, assign him to "Smith_Family" group. Create the group if it is not found and use group name as description too. Everything is found in the prompt for all required fields.
+
+Create "Charlesonsss Smith" as a new okta user. His username and email is firstname dot lastname on gmail. Then, assign him to "Smith_Family" group. Create the group if it is not found and use group name as description too. All required questions are answered in this prompt.
+
+Create "Charlesonsss Smith" as a new okta user. His username and email is firstname dot lastname on gmail. select "Smith_Family" group if not found, create it using group name as description too. Finally assin the user to the group.

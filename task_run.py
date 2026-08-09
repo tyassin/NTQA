@@ -13,8 +13,8 @@ load_dotenv()
 
 # === CLI ARGUMENTS ===
 parser = argparse.ArgumentParser(description="Run Task Assistant with Gemini")
-parser.add_argument('--api-key', type=str, default="", help="Gemini API key")
-parser.add_argument('--model', type=str, default="gemini-3.1-flash-lite", help="Gemini model to use")
+parser.add_argument('--api-key', type=str, default=os.getenv("GEMINI-API-KEY"), help="Gemini API key")
+parser.add_argument('--model', type=str, default=os.getenv("GEMINI-MODEL"), help="Gemini model to use")
 args = parser.parse_args()
 
 # === CONFIGURE GEMINI ===
@@ -62,13 +62,10 @@ class TaskManager:
             "Instructions:\n"
             "- A user will describe one or more tasks.\n"
             "- Identify the task names and required questions for each task.\n"
-            "- Apply all questions to the given prompt to identify answers if found.\n"
-            #"- If the user asks you to execute the task, execute it and return the result.\n"
-            #"- Everything in the prompt is a potential answer to the questions, including the task name itself, and the questions themselves.\n"
-            #"- Everything is found in the prompt, including the answers to the questions, and the questions themselves. If 100% not, then ask for the missing questions.\n"
-            "- Everything is found in the prompt.\n"
+            "- IMPORTANT: Before asking ANY question, carefully scan the entire user prompt for all possible answers to all identified tasks across all turns of the conversation. Only ask a required question if you are certain it is not anywhere in the prompt.\n"
             "- Ask only one unanswered required question at a time across all identified tasks.\n"
             "- Don't ask non-required questions, unless the user provides the question and its answer.\n"
+            "- If a task's question can be answered using a reference to another identified task's output (e.g., '${Get Future Date.start_date}', '${Get Future Date.end_date}', or '${Select Group By Name.id}'), automatically fill in that reference as the answer instead of asking the user.\n"
             "- If all required questions for all identified tasks are answered, return a JSON list of completed tasks:\n"
             "  [\n"
             "    {\n"
@@ -109,7 +106,7 @@ def is_complete(required_keys, answers):
     return all(k in answers and str(answers[k]).strip() for k in required_keys)
 
 def print_final(tasks):
-    print("\n📦 Final JSON:")
+    print(f"\n📦 Final JSON: (Executing {len(tasks)})")
     print(json.dumps(tasks, indent=2))
     print("\n✅ Thank you for using Task Assistant service.")
     print("👋 Exiting Task Assistant.")
@@ -122,12 +119,19 @@ def try_parse_json(text):
         text = text.strip()[:-3].strip()  # remove ending ```
     match = re.search(r"(\[.*\]|\{.*\})", text, re.DOTALL)
     if match:
+        raw_text = match.group(0)
         try:
-            return json.loads(match.group(0))
+            return json.loads(raw_text)
         except json.JSONDecodeError as e:
-            print("⚠️ JSON decode error:", e)
+            # Fallback to ast.literal_eval for single-quoted or trailing-comma structures
+            try:
+                import ast
+                return ast.literal_eval(raw_text)
+            except Exception:
+                print("⚠️ JSON decode error:", e)
     print ("DONE!!!!")
     return None
+
 
 def run_task_simulation(task_name, data, tm=None, context=None):
     if context is None:
@@ -200,26 +204,43 @@ def run_task_simulation(task_name, data, tm=None, context=None):
             except json.JSONDecodeError:
                 pass
 
-        # ✨ Send summary request to Gemini
-        # === Send output to new Gemini convo ===
-        print("\n💬 Sending output to Gemini for analysis...")
+        # ✨ Check if this task has auto_summarize enabled
+        auto_summarize = task_config.get("auto_summarize", False) if task_config else False
         execution_convo = client.chats.create(model=args.model)
-        summary_prompt = f"The output of the command `{command}` is:\n\n{output or '[No output]'}"
-        if error:
-            summary_prompt += f"\n\nThere were also errors:\n{error}"
+        output_sent = False
 
-        response = execution_convo.send_message(summary_prompt)
-        print("\n🤖 Gemini Summary:")
-        print(response.text.strip())
+        print("\n✅ Task execution finished. Output is stored in memory.")
 
-        # Loop for user interaction in execution mode
-        while True:
-            follow_up = ask_user("(Execution Mode) Ask about result or type 'Continue' to executre the next task:")
-            if follow_up.lower() in ['continue']:
-                print("🔙 Continuing to the next task...")
-                break
-            reply = execution_convo.send_message(follow_up)
+        if auto_summarize and output:
+            print("🤖 Generating automatic summary...")
+            summary_prompt = f"The following is the output of a task called '{task_name}':\n\n{output}"
+            if error:
+                summary_prompt += f"\n\nErrors encountered:\n{error}"
+            summary_prompt += "\n\nPlease provide a clear, helpful, human-friendly summary of this result."
+            reply = execution_convo.send_message(summary_prompt)
+            output_sent = True
             print("🤖", reply.text.strip())
+            print("")
+        else:
+            # Loop for user interaction in execution mode
+            while True:
+                follow_up = ask_user("(Execution Mode) Ask about result or type 'Continue' to execute the next task:")
+                if follow_up.lower() in ['continue', 'c']:
+                    print("🔙 Continuing to the next task...")
+                    break
+
+                if not output_sent:
+                    print("💬 Sending output to Gemini for analysis...")
+                    summary_prompt = f"The output of the command `{command}` was:\n\n{output or '[No output]'}"
+                    if error:
+                        summary_prompt += f"\n\nThere were also errors:\n{error}"
+                    summary_prompt += f"\n\nUser Question: {follow_up}"
+                    reply = execution_convo.send_message(summary_prompt)
+                    output_sent = True
+                else:
+                    reply = execution_convo.send_message(follow_up)
+
+                print("🤖", reply.text.strip())
     except FileNotFoundError:
         print(f"❌ Command not found: {command}")
     except Exception as e:
@@ -242,10 +263,12 @@ def main():
             sys_prompt = "🧠 What do you want to do? (type 'exit' to quit)"
         
         user_input = ask_user(sys_prompt)
+        if not last_tasks:
+            user_input += ". All required questions are answered in this prompt."
         if user_input.lower() in ['exit', 'quit', 'bye']:
             print_final(last_tasks)
             break
-
+        print("user_input we'll be using is: " + user_input)
         if user_input.lower() in ['run', 'automate']:
             if last_tasks:
                 print(f"⚠️ Running {len(last_tasks)} task(s) in sequence...")

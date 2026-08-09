@@ -1,12 +1,15 @@
 {
     "task_name": "Assign User to Group",
-    "description": "Assign an existing Okta user to an Okta group.",
+    "description": "Assign an existing Okta user to an Okta group using user ID, login, or email.",
     "command": [
         "curl -sS -X PUT \\",
         "  -H \"Accept: application/json\" \\",
         "  -H \"Content-Type: application/json\" \\",
         "  -H \"Authorization: SSWS $OKTA_API_TOKEN\" \\",
-        "  \"$OKTA_URL/api/v1/groups/${Create Okta Group.id}/users/${Create Okta User.id}\""
+        "  \"$OKTA_URL/api/v1/groups/${answer1}/users/${answer2}\""
     ],
-    "questions": []
+    "questions": [
+        "What is the ID of the Okta group? (If a group was just created or selected, answer with exactly '${Create Okta Group.id}' or '${Select Group By Name.id}'. Otherwise, provide the actual ID)*",
+        "What is the email or ID of the user to assign? (If a user was just created, answer with exactly '${Create Okta User.id}'. Otherwise, provide the email or ID)*"
+    ]
 }

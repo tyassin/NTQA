@@ -1,0 +1,11 @@
+{
+    "task_name": "Get Weather in Period",
+    "description": "Retrieve weather data (max/min temperature) for a specific location and date range.",
+    "command": "python3 get_weather.py '${answer1}' '${answer2}' '${answer3}'",
+    "auto_summarize": true,
+    "questions": [
+        "What is the location (city name)?*",
+        "What is the start date (YYYY-MM-DD)? (If a date was calculated, answer with exactly '${Get Future Date.start_date}'. Otherwise, provide the date)*",
+        "What is the end date (YYYY-MM-DD)? (If a date was calculated, answer with exactly '${Get Future Date.end_date}'. Otherwise, provide the date)*"
+    ]
+}
