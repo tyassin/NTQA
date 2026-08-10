@@ -133,7 +133,7 @@ def try_parse_json(text):
     return None
 
 
-def run_task_simulation(task_name, data, tm=None, context=None):
+def execute_task(task_name, data, tm=None, context=None):
     if context is None:
         context = {}
         
@@ -204,7 +204,7 @@ def run_task_simulation(task_name, data, tm=None, context=None):
             except json.JSONDecodeError:
                 pass
 
-        # ✨ Check if this task has auto_summarize enabled
+        # Check if this task has auto_summarize enabled
         auto_summarize = task_config.get("auto_summarize", False) if task_config else False
         execution_convo = client.chats.create(model=args.model)
         output_sent = False
@@ -263,18 +263,18 @@ def main():
             sys_prompt = "🧠 What do you want to do? (type 'exit' to quit)"
         
         user_input = ask_user(sys_prompt)
-        if not last_tasks:
-            user_input += ". All required questions are answered in this prompt."
+        #if not last_tasks:
+        #    user_input += ". All required questions are answered in this prompt."
         if user_input.lower() in ['exit', 'quit', 'bye']:
             print_final(last_tasks)
             break
-        print("user_input we'll be using is: " + user_input)
+        #print("user_input we'll be using is: " + user_input)
         if user_input.lower() in ['run', 'automate']:
             if last_tasks:
                 print(f"⚠️ Running {len(last_tasks)} task(s) in sequence...")
                 execution_context = {}
                 for task_info in last_tasks:
-                    run_task_simulation(task_info.get("task"), task_info.get("data", {}), tm, execution_context)
+                    execute_task(task_info.get("task"), task_info.get("data", {}), tm, execution_context)
             else:
                 print("⚠️ No previous task found to run.")
             continue
@@ -329,7 +329,7 @@ def main():
                     print(f"⚠️ Running {len(last_tasks)} task(s) in sequence...")
                     execution_context = {}
                     for task_info in last_tasks:
-                        run_task_simulation(task_info.get("task"), task_info.get("data", {}), tm, execution_context)
+                        execute_task(task_info.get("task"), task_info.get("data", {}), tm, execution_context)
                 else:
                     print("⚠️ No previous task found to run.")
                 continue
