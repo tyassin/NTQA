@@ -284,13 +284,13 @@ I understand. Please describe the task or tasks you would like me to assist you 
 📤 Output:
 PID TTY           TIME CMD
   514 ttys000    0:00.09 -bash
- 3451 ttys005    0:01.28 /bin/bash --init-file /Users/tarek/Desktop/Antigravity.app/Contents/Resources/app/out/vs/workbench/contrib/terminal/common/scripts/shellIntegration-bash.sh
+ 3451 ttys005    0:01.28 /bin/bash --init-file /Users/test/Desktop/Antigravity.app/Contents/Resources/app/out/vs/workbench/contrib/terminal/common/scripts/shellIntegration-bash.sh
 95054 ttys005    0:01.59 /usr/local/Cellar/python@3.14/3.14.4/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python task_run.py
- 4679 ttys008    0:00.03 /bin/bash --init-file /Users/tarek/Desktop/Antigravity.app/Contents/Resources/app/out/vs/workbench/contrib/terminal/common/scripts/shellIntegration-bash.sh
- 4751 ttys010    0:00.13 /bin/bash --init-file /Users/tarek/Desktop/Antigravity.app/Contents/Resources/app/out/vs/workbench/contrib/terminal/common/scripts/shellIntegration-bash.sh
+ 4679 ttys008    0:00.03 /bin/bash --init-file /Users/test/Desktop/Antigravity.app/Contents/Resources/app/out/vs/workbench/contrib/terminal/common/scripts/shellIntegration-bash.sh
+ 4751 ttys010    0:00.13 /bin/bash --init-file /Users/test/Desktop/Antigravity.app/Contents/Resources/app/out/vs/workbench/contrib/terminal/common/scripts/shellIntegration-bash.sh
 49388 ttys010    4:40.61 cloudflared tunnel run --url http://00.00.00.00 win-run
- 2144 ttys011    0:00.20 /bin/bash --init-file /Users/tarek/Desktop/Antigravity.app/Contents/Resources/app/out/vs/workbench/contrib/terminal/common/scripts/shellIntegration-bash.sh
-85653 ttys013    0:00.10 /bin/bash --init-file /Users/tarek/Desktop/Antigravity.app/Contents/Resources/app/out/vs/workbench/contrib/terminal/common/scripts/shellIntegration-bash.sh
+ 2144 ttys011    0:00.20 /bin/bash --init-file /Users/test/Desktop/Antigravity.app/Contents/Resources/app/out/vs/workbench/contrib/terminal/common/scripts/shellIntegration-bash.sh
+85653 ttys013    0:00.10 /bin/bash --init-file /Users/test/Desktop/Antigravity.app/Contents/Resources/app/out/vs/workbench/contrib/terminal/common/scripts/shellIntegration-bash.sh
 
 ✅ Task execution finished. Output is stored in memory.
 
@@ -793,6 +793,1389 @@ You should expect pleasant, late-summer/early-autumn weather. It will likely be 
       "What is the location (city name)?*": "New York",
       "What is the start date (YYYY-MM-DD)? (If a date was calculated, answer with exactly '${Get Future Date.start_date}'. Otherwise, provide the date)*": "${Get Future Date.start_date}",
       "What is the end date (YYYY-MM-DD)? (If a date was calculated, answer with exactly '${Get Future Date.end_date}'. Otherwise, provide the date)*": "${Get Future Date.end_date}"
+    }
+  }
+]
+
+✅ Thank you for using Task Assistant service.
+👋 Exiting Task Assistant.
+
+
+
+4th run
+----------------------------------------
+📝 🧠 What do you want to do? (type 'exit' to quit, 'run' to execute one task with a pause, or 'automate' to execute all tasks without pauses)
+> "Kerry Smith" is traveling to Washington DC next month for a 36 day trip. She wants to be informed about the weather during her stay. Create a new okta user using her first dot last names at gmail as username and email. Then create or update 4 new attributes one called location "Location", title "Location". The 2nd attribute is called "Duration", title "Duration" and set duration in days. The 3rd attribute is called "Weather", title "Weather", updated with the ('weather') from weather api response. The 4th attribute is called "Weather_Note", title "Weather Note", updated it with ('note') from the weather api response.Update the user with the new attribute values.The new user is manager and need to be added to the managers group. She also needs to be assigned to the following groups "Smith_Family", "Smiths", "zone_one", "zone_two", "zone_four", and "zone_five"
+✏️  (spell-corrected) "Kerry Smith" is traveling to Washington, D.C., next month for a 36-day trip. She wants to be informed about the weather during her stay. Create a new Okta user using her first dot last name at gmail.com as the username and email. Then, create or update four new attributes: the first is called "Location," with the title "Location"; the second is called "Duration," with the title "Duration," and set the duration in days; the third is called "Weather," with the title "Weather," updated with the ('weather') from the weather API response; and the fourth is called "Weather_Note," with the title "Weather Note," updated with the ('note') from the weather API response. Update the user with the new attribute values. The new user is a manager and needs to be added to the managers group. She also needs to be assigned to the following groups: "Smith_Family," "Smiths," "zone_one," "zone_two," "zone_four," and "zone_five."
+DONE!!!!
+🔄 Auto-retry 1/3 — still extracting answers from your prompt...
+
+📦 Final JSON: (Executing 25)
+[
+  {
+    "task": "Get Future Date",
+    "data": {
+      "What is the timeframe/period (next week or next month)?*": "next month",
+      "What is the duration of the trip (number of days)?*": "36"
+    }
+  },
+  {
+    "task": "Get Weather in Period",
+    "data": {
+      "What is the location (city name)?*": "Washington, D.C.",
+      "What is the start date (YYYY-MM-DD)? (If a date was calculated, answer with exactly '${Get Future Date.start_date}'. Otherwise, provide the date)*": "${Get Future Date.start_date}",
+      "What is the end date (YYYY-MM-DD)? (If a date was calculated, answer with exactly '${Get Future Date.end_date}'. Otherwise, provide the date)*": "${Get Future Date.end_date}"
+    }
+  },
+  {
+    "task": "Create Okta User",
+    "data": {
+      "What is the new okta user's first name?*": "Kerry",
+      "What is the new okta user's last name?*": "Smith",
+      "What is the new okta user's email?*": "kerry.smith@gmail.com",
+      "What is the user's job title?": "manager",
+      "What's the user's username?*": "kerry.smith@gmail.com"
+    }
+  },
+  {
+    "task": "Add Okta Attribute",
+    "data": {
+      "What is the name of the new Okta attribute?*": "Location",
+      "What is the title/label of the new Okta attribute?": "Location",
+      "What is the type of the new Okta attribute? (string/number/boolean)": "string"
+    }
+  },
+  {
+    "task": "Add Okta Attribute",
+    "data": {
+      "What is the name of the new Okta attribute?*": "Duration",
+      "What is the title/label of the new Okta attribute?": "Duration",
+      "What is the type of the new Okta attribute? (string/number/boolean)": "number"
+    }
+  },
+  {
+    "task": "Add Okta Attribute",
+    "data": {
+      "What is the name of the new Okta attribute?*": "Weather",
+      "What is the title/label of the new Okta attribute?": "Weather",
+      "What is the type of the new Okta attribute? (string/number/boolean)": "string"
+    }
+  },
+  {
+    "task": "Add Okta Attribute",
+    "data": {
+      "What is the name of the new Okta attribute?*": "Weather_Note",
+      "What is the title/label of the new Okta attribute?": "Weather Note",
+      "What is the type of the new Okta attribute? (string/number/boolean)": "string"
+    }
+  },
+  {
+    "task": "Update Okta User",
+    "data": {
+      "What is the ID of the user? (If a user was just created or selected, answer with exactly '${Create Okta User.id}' or '${Find a user by first name and last name.id}'. Otherwise, provide the actual ID)**": "${Create Okta User.id}",
+      "What is the name of the attribute to update?*": "Location",
+      "What is the value to set for this attribute?*": "Washington, D.C."
+    }
+  },
+  {
+    "task": "Update Okta User",
+    "data": {
+      "What is the ID of the user? (If a user was just created or selected, answer with exactly '${Create Okta User.id}' or '${Find a user by first name and last name.id}'. Otherwise, provide the actual ID)**": "${Create Okta User.id}",
+      "What is the name of the attribute to update?*": "Duration",
+      "What is the value to set for this attribute?*": "36"
+    }
+  },
+  {
+    "task": "Update Okta User",
+    "data": {
+      "What is the ID of the user? (If a user was just created or selected, answer with exactly '${Create Okta User.id}' or '${Find a user by first name and last name.id}'. Otherwise, provide the actual ID)**": "${Create Okta User.id}",
+      "What is the name of the attribute to update?*": "Weather",
+      "What is the value to set for this attribute?*": "${Get Weather in Period.weather}"
+    }
+  },
+  {
+    "task": "Update Okta User",
+    "data": {
+      "What is the ID of the user? (If a user was just created or selected, answer with exactly '${Create Okta User.id}' or '${Find a user by first name and last name.id}'. Otherwise, provide the actual ID)**": "${Create Okta User.id}",
+      "What is the name of the attribute to update?*": "Weather_Note",
+      "What is the value to set for this attribute?*": "${Get Weather in Period.note}"
+    }
+  },
+  {
+    "task": "Select Group By Name",
+    "data": {
+      "What is the name of the Okta group to search for?*": "managers"
+    }
+  },
+  {
+    "task": "Assign User to Group",
+    "data": {
+      "What is the ID of the Okta group? (If a group was just created or selected, answer with exactly '${Create Okta Group.id}' or '${Select Group By Name.id}'. Otherwise, provide the actual ID)*": "${Select Group By Name.id}",
+      "What is the email or ID of the user to assign? (If a user was just created, answer with exactly '${Create Okta User.id}'. Otherwise, provide the email or ID)*": "${Create Okta User.id}"
+    }
+  },
+  {
+    "task": "Select Group By Name",
+    "data": {
+      "What is the name of the Okta group to search for?*": "Smith_Family"
+    }
+  },
+  {
+    "task": "Assign User to Group",
+    "data": {
+      "What is the ID of the Okta group? (If a group was just created or selected, answer with exactly '${Create Okta Group.id}' or '${Select Group By Name.id}'. Otherwise, provide the actual ID)*": "${Select Group By Name.id}",
+      "What is the email or ID of the user to assign? (If a user was just created, answer with exactly '${Create Okta User.id}'. Otherwise, provide the email or ID)*": "${Create Okta User.id}"
+    }
+  },
+  {
+    "task": "Select Group By Name",
+    "data": {
+      "What is the name of the Okta group to search for?*": "Smiths"
+    }
+  },
+  {
+    "task": "Assign User to Group",
+    "data": {
+      "What is the ID of the Okta group? (If a group was just created or selected, answer with exactly '${Create Okta Group.id}' or '${Select Group By Name.id}'. Otherwise, provide the actual ID)*": "${Select Group By Name.id}",
+      "What is the email or ID of the user to assign? (If a user was just created, answer with exactly '${Create Okta User.id}'. Otherwise, provide the email or ID)*": "${Create Okta User.id}"
+    }
+  },
+  {
+    "task": "Select Group By Name",
+    "data": {
+      "What is the name of the Okta group to search for?*": "zone_one"
+    }
+  },
+  {
+    "task": "Assign User to Group",
+    "data": {
+      "What is the ID of the Okta group? (If a group was just created or selected, answer with exactly '${Create Okta Group.id}' or '${Select Group By Name.id}'. Otherwise, provide the actual ID)*": "${Select Group By Name.id}",
+      "What is the email or ID of the user to assign? (If a user was just created, answer with exactly '${Create Okta User.id}'. Otherwise, provide the email or ID)*": "${Create Okta User.id}"
+    }
+  },
+  {
+    "task": "Select Group By Name",
+    "data": {
+      "What is the name of the Okta group to search for?*": "zone_two"
+    }
+  },
+  {
+    "task": "Assign User to Group",
+    "data": {
+      "What is the ID of the Okta group? (If a group was just created or selected, answer with exactly '${Create Okta Group.id}' or '${Select Group By Name.id}'. Otherwise, provide the actual ID)*": "${Select Group By Name.id}",
+      "What is the email or ID of the user to assign? (If a user was just created, answer with exactly '${Create Okta User.id}'. Otherwise, provide the email or ID)*": "${Create Okta User.id}"
+    }
+  },
+  {
+    "task": "Select Group By Name",
+    "data": {
+      "What is the name of the Okta group to search for?*": "zone_four"
+    }
+  },
+  {
+    "task": "Assign User to Group",
+    "data": {
+      "What is the ID of the Okta group? (If a group was just created or selected, answer with exactly '${Create Okta Group.id}' or '${Select Group By Name.id}'. Otherwise, provide the actual ID)*": "${Select Group By Name.id}",
+      "What is the email or ID of the user to assign? (If a user was just created, answer with exactly '${Create Okta User.id}'. Otherwise, provide the email or ID)*": "${Create Okta User.id}"
+    }
+  },
+  {
+    "task": "Select Group By Name",
+    "data": {
+      "What is the name of the Okta group to search for?*": "zone_five"
+    }
+  },
+  {
+    "task": "Assign User to Group",
+    "data": {
+      "What is the ID of the Okta group? (If a group was just created or selected, answer with exactly '${Create Okta Group.id}' or '${Select Group By Name.id}'. Otherwise, provide the actual ID)*": "${Select Group By Name.id}",
+      "What is the email or ID of the user to assign? (If a user was just created, answer with exactly '${Create Okta User.id}'. Otherwise, provide the email or ID)*": "${Create Okta User.id}"
+    }
+  }
+]
+
+✅ Thank you for using Task Assistant service.
+👋 Exiting Task Assistant.
+
+📝 🧠 What do you want to do? (type 'exit' to quit, 'run' to execute one task with a pause, or 'automate' to execute all tasks without pauses)
+> run
+pause is: True
+⚠️ Running 25 task(s) in sequence...
+
+⚙️ Now running task: Get Future Date with data:
+{
+  "What is the timeframe/period (next week or next month)?*": "next month",
+  "What is the duration of the trip (number of days)?*": "36"
+}
+▶️ Executing: python3 get_future_date.py 'next month' '36'
+
+📤 Output:
+{
+  "start_date": "2026-09-11",
+  "end_date": "2026-10-16"
+}
+
+✅ Task execution finished. Output is stored in memory.
+
+📝 (Execution Mode) Ask about result or type 'Continue' to execute the next task:
+> c
+🔙 Continuing to the next task...
+✅ Task completed.
+
+
+⚙️ Now running task: Get Weather in Period with data:
+{
+  "What is the location (city name)?*": "Washington, D.C.",
+  "What is the start date (YYYY-MM-DD)? (If a date was calculated, answer with exactly '${Get Future Date.start_date}'. Otherwise, provide the date)*": "${Get Future Date.start_date}",
+  "What is the end date (YYYY-MM-DD)? (If a date was calculated, answer with exactly '${Get Future Date.end_date}'. Otherwise, provide the date)*": "${Get Future Date.end_date}"
+}
+▶️ Executing: python3 get_weather.py 'Washington, D.C.' '2026-09-11' '2026-10-16'
+
+📤 Output:
+{
+  "location": "Washington D.C.",
+  "country": "United States",
+  "latitude": 38.89511,
+  "longitude": -77.03637,
+  "start_date": "2026-09-11",
+  "end_date": "2026-10-16",
+  "weather": [
+    {
+      "date": "2026-08-26",
+      "temp_max_c": 26.2,
+      "temp_min_c": 16.5,
+      "estimated": true
+    },
+    {
+      "date": "2026-08-27",
+      "temp_max_c": 23.9,
+      "temp_min_c": 14.9,
+      "estimated": true
+    },
+    {
+      "date": "2026-08-28",
+      "temp_max_c": 25.9,
+      "temp_min_c": 14.8,
+      "estimated": true
+    },
+    {
+      "date": "2026-08-29",
+      "temp_max_c": 25.8,
+      "temp_min_c": 16.8,
+      "estimated": true
+    },
+    {
+      "date": "2026-08-30",
+      "temp_max_c": 24.5,
+      "temp_min_c": 13.6,
+      "estimated": true
+    },
+    {
+      "date": "2026-08-31",
+      "temp_max_c": 26.3,
+      "temp_min_c": 14.4,
+      "estimated": true
+    },
+    {
+      "date": "2026-09-01",
+      "temp_max_c": 25.9,
+      "temp_min_c": 15.3,
+      "estimated": true
+    },
+    {
+      "date": "2026-09-02",
+      "temp_max_c": 24.6,
+      "temp_min_c": 15.3,
+      "estimated": true
+    },
+    {
+      "date": "2026-09-03",
+      "temp_max_c": 28.5,
+      "temp_min_c": 15.2,
+      "estimated": true
+    },
+    {
+      "date": "2026-09-04",
+      "temp_max_c": 30.8,
+      "temp_min_c": 17.7,
+      "estimated": true
+    },
+    {
+      "date": "2026-09-05",
+      "temp_max_c": 32.3,
+      "temp_min_c": 17.9,
+      "estimated": true
+    },
+    {
+      "date": "2026-09-06",
+      "temp_max_c": 32.3,
+      "temp_min_c": 20.7,
+      "estimated": true
+    },
+    {
+      "date": "2026-09-07",
+      "temp_max_c": 24.2,
+      "temp_min_c": 16.2,
+      "estimated": true
+    },
+    {
+      "date": "2026-09-08",
+      "temp_max_c": 23.3,
+      "temp_min_c": 13.4,
+      "estimated": true
+    },
+    {
+      "date": "2026-09-09",
+      "temp_max_c": 24.5,
+      "temp_min_c": 13.2,
+      "estimated": true
+    },
+    {
+      "date": "2026-09-10",
+      "temp_max_c": 22.7,
+      "temp_min_c": 16.4,
+      "estimated": true
+    },
+    {
+      "date": "2026-09-11",
+      "temp_max_c": 25.0,
+      "temp_min_c": 17.1,
+      "estimated": true
+    },
+    {
+      "date": "2026-09-12",
+      "temp_max_c": 26.8,
+      "temp_min_c": 16.9,
+      "estimated": true
+    },
+    {
+      "date": "2026-09-13",
+      "temp_max_c": 28.6,
+      "temp_min_c": 15.9,
+      "estimated": true
+    },
+    {
+      "date": "2026-09-14",
+      "temp_max_c": 29.4,
+      "temp_min_c": 17.1,
+      "estimated": true
+    },
+    {
+      "date": "2026-09-15",
+      "temp_max_c": 27.0,
+      "temp_min_c": 18.1,
+      "estimated": true
+    },
+    {
+      "date": "2026-09-16",
+      "temp_max_c": 23.1,
+      "temp_min_c": 16.4,
+      "estimated": true
+    },
+    {
+      "date": "2026-09-17",
+      "temp_max_c": 21.0,
+      "temp_min_c": 16.2,
+      "estimated": true
+    },
+    {
+      "date": "2026-09-18",
+      "temp_max_c": 26.6,
+      "temp_min_c": 17.1,
+      "estimated": true
+    },
+    {
+      "date": "2026-09-19",
+      "temp_max_c": 29.0,
+      "temp_min_c": 17.8,
+      "estimated": true
+    },
+    {
+      "date": "2026-09-20",
+      "temp_max_c": 23.7,
+      "temp_min_c": 17.6,
+      "estimated": true
+    },
+    {
+      "date": "2026-09-21",
+      "temp_max_c": 23.3,
+      "temp_min_c": 17.4,
+      "estimated": true
+    },
+    {
+      "date": "2026-09-22",
+      "temp_max_c": 25.5,
+      "temp_min_c": 15.0,
+      "estimated": true
+    },
+    {
+      "date": "2026-09-23",
+      "temp_max_c": 28.5,
+      "temp_min_c": 17.2,
+      "estimated": true
+    },
+    {
+      "date": "2026-09-24",
+      "temp_max_c": 24.0,
+      "temp_min_c": 18.1,
+      "estimated": true
+    },
+    {
+      "date": "2026-09-25",
+      "temp_max_c": 28.3,
+      "temp_min_c": 20.7,
+      "estimated": true
+    },
+    {
+      "date": "2026-09-26",
+      "temp_max_c": 26.8,
+      "temp_min_c": 19.4,
+      "estimated": true
+    },
+    {
+      "date": "2026-09-27",
+      "temp_max_c": 23.7,
+      "temp_min_c": 19.3,
+      "estimated": true
+    },
+    {
+      "date": "2026-09-28",
+      "temp_max_c": 26.6,
+      "temp_min_c": 17.5,
+      "estimated": true
+    },
+    {
+      "date": "2026-09-29",
+      "temp_max_c": 23.1,
+      "temp_min_c": 18.5,
+      "estimated": true
+    },
+    {
+      "date": "2026-09-30",
+      "temp_max_c": 23.5,
+      "temp_min_c": 19.3,
+      "estimated": true
+    },
+    {
+      "date": "2026-10-01",
+      "temp_max_c": 22.2,
+      "temp_min_c": 15.1,
+      "estimated": true
+    },
+    {
+      "date": "2026-10-02",
+      "temp_max_c": 21.0,
+      "temp_min_c": 10.2,
+      "estimated": true
+    },
+    {
+      "date": "2026-10-03",
+      "temp_max_c": 21.5,
+      "temp_min_c": 9.9,
+      "estimated": true
+    },
+    {
+      "date": "2026-10-04",
+      "temp_max_c": 24.8,
+      "temp_min_c": 10.1,
+      "estimated": true
+    },
+    {
+      "date": "2026-10-05",
+      "temp_max_c": 26.7,
+      "temp_min_c": 11.3,
+      "estimated": true
+    },
+    {
+      "date": "2026-10-06",
+      "temp_max_c": 28.4,
+      "temp_min_c": 13.7,
+      "estimated": true
+    },
+    {
+      "date": "2026-10-07",
+      "temp_max_c": 26.9,
+      "temp_min_c": 15.8,
+      "estimated": true
+    },
+    {
+      "date": "2026-10-08",
+      "temp_max_c": 22.2,
+      "temp_min_c": 14.2,
+      "estimated": true
+    },
+    {
+      "date": "2026-10-09",
+      "temp_max_c": 17.8,
+      "temp_min_c": 9.7,
+      "estimated": true
+    },
+    {
+      "date": "2026-10-10",
+      "temp_max_c": 17.9,
+      "temp_min_c": 8.8,
+      "estimated": true
+    },
+    {
+      "date": "2026-10-11",
+      "temp_max_c": 20.9,
+      "temp_min_c": 9.9,
+      "estimated": true
+    },
+    {
+      "date": "2026-10-12",
+      "temp_max_c": 19.0,
+      "temp_min_c": 14.8,
+      "estimated": true
+    },
+    {
+      "date": "2026-10-13",
+      "temp_max_c": 16.5,
+      "temp_min_c": 13.3,
+      "estimated": true
+    },
+    {
+      "date": "2026-10-14",
+      "temp_max_c": 18.5,
+      "temp_min_c": 12.9,
+      "estimated": true
+    },
+    {
+      "date": "2026-10-15",
+      "temp_max_c": 21.5,
+      "temp_min_c": 12.0,
+      "estimated": true
+    },
+    {
+      "date": "2026-10-16",
+      "temp_max_c": 17.1,
+      "temp_min_c": 8.1,
+      "estimated": true
+    }
+  ],
+  "note": "Weather forecast is only available 14 days ahead. Dates from 2026-08-26 to 2026-10-16 are estimated using historical data from the same period last year."
+}
+
+✅ Task execution finished. Output is stored in memory.
+🤖 Generating automatic summary...
+🤖 Here is a summary of the weather data for Washington D.C. from September 11, 2026, to October 16, 2026.
+
+**Important Note:** Because this forecast looks beyond 14 days, these figures are based on historical data from the same period last year and are estimated.
+
+### **Temperature Overview**
+Over the course of this 36-day period, temperatures will gradually transition from late summer warmth to a cooler autumn climate.
+
+*   **September (Warm Phase):** During the first half of September, you can expect pleasant, warm weather. Daily highs will consistently reach the mid-to-high 20s (°C), with several days peaking near 28–29°C. Nighttime lows will generally stay comfortable, hovering between 15°C and 19°C.
+*   **Early October (Transition):** As we move into October, the weather begins to cool significantly. While early October still sees some nice days with highs reaching 26–28°C, the overall trend shows a steady decline.
+*   **Mid-October (Cool Phase):** By the middle of the month (October 10th–16th), the crispness of fall will be evident. Daytime highs will drop into the mid-to-high teens (16–18°C), and nights will become quite chilly, dipping down toward 8–10°C.
+
+### **Trend Summary**
+*   **Warmest days:** Early to mid-September (Highs of ~29°C).
+*   **Coolest days:** Mid-October (Highs of ~16–17°C, Lows of ~8°C).
+
+**Travel Advice:** If you are visiting during this window, layering is highly recommended. You will want light clothing for the warm September days, but you should definitely pack a jacket or sweaters for the cool mornings and evenings, especially if you are staying through mid-October.
+
+✅ Task completed.
+
+
+⚙️ Now running task: Create Okta User with data:
+{
+  "What is the new okta user's first name?*": "Kerry",
+  "What is the new okta user's last name?*": "Smith",
+  "What is the new okta user's email?*": "kerry.smith@gmail.com",
+  "What is the user's job title?": "manager",
+  "What's the user's username?*": "kerry.smith@gmail.com"
+}
+▶️ Executing: curl -sS -X POST \
+  -H "Accept: application/json" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: SSWS $OKTA_API_TOKEN" \
+  -d '{"profile": {"firstName": "Kerry", "lastName": "Smith", "email": "kerry.smith@gmail.com", "title": "manager", "login": "kerry.smith@gmail.com"}, "credentials": {"password": {"value": "TempPass123!"}}}' \
+  "$OKTA_URL/api/v1/users?activate=true"
+
+📤 Output:
+{"id":"00u12ew3a2gLxdVy11d8","status":"ACTIVE","created":"2026-08-11T17:30:24.000Z","activated":"2026-08-11T17:30:24.000Z","statusChanged":"2026-08-11T17:30:24.000Z","lastLogin":null,"lastUpdated":"2026-08-11T17:30:24.000Z","passwordChanged":"2026-08-11T17:30:24.000Z","type":{"id":"oty1yzio24JjJKmvL1d7"},"profile":{"firstName":"Kerry","lastName":"Smith","mobilePhone":null,"secondEmail":null,"title":"manager","login":"kerry.smith@gmail.com","email":"kerry.smith@gmail.com"},"credentials":{"password":{},"provider":{"type":"OKTA","name":"OKTA"}},"_links":{"suspend":{"href":"https://<your-test-okta-org>/api/v1/users/00u12ew3a2gLxdVy11d8/lifecycle/suspend","method":"POST"},"schema":{"href":"https://<your-test-okta-org>/api/v1/meta/schemas/user/osc1yzio24JjJKmvL1d7"},"resetPassword":{"href":"https://<your-test-okta-org>/api/v1/users/00u12ew3a2gLxdVy11d8/lifecycle/reset_password","method":"POST"},"forgotPassword":{"href":"https://<your-test-okta-org>/api/v1/users/00u12ew3a2gLxdVy11d8/credentials/forgot_password","method":"POST"},"expirePassword":{"href":"https://<your-test-okta-org>/api/v1/users/00u12ew3a2gLxdVy11d8/lifecycle/expire_password","method":"POST"},"changeRecoveryQuestion":{"href":"https://<your-test-okta-org>/api/v1/users/00u12ew3a2gLxdVy11d8/credentials/change_recovery_question","method":"POST"},"self":{"href":"https://<your-test-okta-org>/api/v1/users/00u12ew3a2gLxdVy11d8"},"resetFactors":{"href":"https://<your-test-okta-org>/api/v1/users/00u12ew3a2gLxdVy11d8/lifecycle/reset_factors","method":"POST"},"type":{"href":"https://<your-test-okta-org>/api/v1/meta/types/user/oty1yzio24JjJKmvL1d7"},"changePassword":{"href":"https://<your-test-okta-org>/api/v1/users/00u12ew3a2gLxdVy11d8/credentials/change_password","method":"POST"},"deactivate":{"href":"https://<your-test-okta-org>/api/v1/users/00u12ew3a2gLxdVy11d8/lifecycle/deactivate","method":"POST"}}}
+
+✅ Task execution finished. Output is stored in memory.
+
+📝 (Execution Mode) Ask about result or type 'Continue' to execute the next task:
+> c
+🔙 Continuing to the next task...
+✅ Task completed.
+
+
+⚙️ Now running task: Add Okta Attribute with data:
+{
+  "What is the name of the new Okta attribute?*": "Location",
+  "What is the title/label of the new Okta attribute?": "Location",
+  "What is the type of the new Okta attribute? (string/number/boolean)": "string"
+}
+▶️ Executing: curl -sS -X POST \
+  -H "Accept: application/json" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: SSWS $OKTA_API_TOKEN" \
+  -d '{"definitions": {"custom": {"id": "#custom", "type": "object", "properties": {"Location": {"title": "Location", "type": "string", "required": false}}}}}' \
+  "$OKTA_URL/api/v1/meta/schemas/user/default"
+
+📤 Output:
+{"id":"https://<your-test-okta-org>/meta/schemas/user/default","$schema":"http://json-schema.org/draft-04/schema#","name":"user","title":"User","description":"Okta user profile template with default permission settings","lastUpdated":"2026-08-11T04:04:20.000Z","created":"2021-11-29T18:15:48.000Z","definitions":{"custom":{"id":"#custom","type":"object","properties":{"address_four":{"title":"Address Four","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"address_five":{"title":"Address Five","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"birthdate":{"title":"birthdate","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"company_department":{"title":"Company Department","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"regional_department":{"title":"Reginonal Department","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"Location":{"title":"Location","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"Duration":{"title":"Duration","type":"number","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"Weather":{"title":"Weather","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"Weather_Note":{"title":"Weather Note","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}}},"required":[]},"base":{"id":"#base","type":"object","properties":{"login":{"title":"Username","type":"string","required":true,"mutability":"READ_WRITE","scope":"NONE","minLength":5,"maxLength":100,"permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"firstName":{"title":"First name","type":"string","required":true,"mutability":"READ_WRITE","scope":"NONE","minLength":1,"maxLength":50,"permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"lastName":{"title":"Last name","type":"string","required":true,"mutability":"READ_WRITE","scope":"NONE","minLength":1,"maxLength":50,"permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"middleName":{"title":"Middle name","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"honorificPrefix":{"title":"Honorific prefix","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"honorificSuffix":{"title":"Honorific suffix","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"email":{"title":"Primary email","type":"string","required":true,"format":"email","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"title":{"title":"Title","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"displayName":{"title":"Display name","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"nickName":{"title":"Nickname","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"profileUrl":{"title":"Profile Url","type":"string","format":"uri","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"secondEmail":{"title":"Secondary email","type":"string","format":"email","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"mobilePhone":{"title":"Mobile phone","type":"string","mutability":"READ_WRITE","scope":"NONE","maxLength":100,"permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"primaryPhone":{"title":"Primary phone","type":"string","mutability":"READ_WRITE","scope":"NONE","maxLength":100,"permissions":[{"principal":"SELF","action":"HIDE"}],"master":{"type":"PROFILE_MASTER"}},"streetAddress":{"title":"Street address","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"HIDE"}],"master":{"type":"PROFILE_MASTER"}},"city":{"title":"City","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"HIDE"}],"master":{"type":"PROFILE_MASTER"}},"state":{"title":"State","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"HIDE"}],"master":{"type":"PROFILE_MASTER"}},"zipCode":{"title":"Zip code","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"HIDE"}],"master":{"type":"PROFILE_MASTER"}},"countryCode":{"title":"Country code","type":"string","format":"country-code","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"HIDE"}],"master":{"type":"PROFILE_MASTER"}},"postalAddress":{"title":"Postal Address","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"HIDE"}],"master":{"type":"PROFILE_MASTER"}},"preferredLanguage":{"title":"Preferred language","type":"string","format":"language-code","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"locale":{"title":"Locale","type":"string","format":"locale","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"timezone":{"title":"Time zone","type":"string","format":"timezone","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"userType":{"title":"User type","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"employeeNumber":{"title":"Employee number","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"costCenter":{"title":"Cost center","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"organization":{"title":"Organization","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"division":{"title":"Division","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"department":{"title":"Department","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"managerId":{"title":"ManagerId","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"manager":{"title":"Manager","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}}},"required":["login","firstName","lastName","email"]}},"type":"object","properties":{"profile":{"allOf":[{"$ref":"#/definitions/custom"},{"$ref":"#/definitions/base"}]}},"_links":{"self":{"rel":"self","href":"https://<your-test-okta-org>/api/v1/meta/schemas/user/osc1yzio24JjJKmvL1d7","method":"GET"},"type":{"rel":"type","href":"https://<your-test-okta-org>/api/v1/meta/types/user/oty1yzio24JjJKmvL1d7","method":"GET"}}}
+
+✅ Task execution finished. Output is stored in memory.
+
+📝 (Execution Mode) Ask about result or type 'Continue' to execute the next task:
+> c
+🔙 Continuing to the next task...
+✅ Task completed.
+
+
+⚙️ Now running task: Add Okta Attribute with data:
+{
+  "What is the name of the new Okta attribute?*": "Duration",
+  "What is the title/label of the new Okta attribute?": "Duration",
+  "What is the type of the new Okta attribute? (string/number/boolean)": "number"
+}
+▶️ Executing: curl -sS -X POST \
+  -H "Accept: application/json" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: SSWS $OKTA_API_TOKEN" \
+  -d '{"definitions": {"custom": {"id": "#custom", "type": "object", "properties": {"Duration": {"title": "Duration", "type": "number", "required": false}}}}}' \
+  "$OKTA_URL/api/v1/meta/schemas/user/default"
+
+📤 Output:
+{"id":"https://<your-test-okta-org>/meta/schemas/user/default","$schema":"http://json-schema.org/draft-04/schema#","name":"user","title":"User","description":"Okta user profile template with default permission settings","lastUpdated":"2026-08-11T04:04:20.000Z","created":"2021-11-29T18:15:48.000Z","definitions":{"custom":{"id":"#custom","type":"object","properties":{"address_four":{"title":"Address Four","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"address_five":{"title":"Address Five","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"birthdate":{"title":"birthdate","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"company_department":{"title":"Company Department","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"regional_department":{"title":"Reginonal Department","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"Location":{"title":"Location","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"Duration":{"title":"Duration","type":"number","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"Weather":{"title":"Weather","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"Weather_Note":{"title":"Weather Note","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}}},"required":[]},"base":{"id":"#base","type":"object","properties":{"login":{"title":"Username","type":"string","required":true,"mutability":"READ_WRITE","scope":"NONE","minLength":5,"maxLength":100,"permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"firstName":{"title":"First name","type":"string","required":true,"mutability":"READ_WRITE","scope":"NONE","minLength":1,"maxLength":50,"permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"lastName":{"title":"Last name","type":"string","required":true,"mutability":"READ_WRITE","scope":"NONE","minLength":1,"maxLength":50,"permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"middleName":{"title":"Middle name","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"honorificPrefix":{"title":"Honorific prefix","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"honorificSuffix":{"title":"Honorific suffix","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"email":{"title":"Primary email","type":"string","required":true,"format":"email","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"title":{"title":"Title","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"displayName":{"title":"Display name","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"nickName":{"title":"Nickname","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"profileUrl":{"title":"Profile Url","type":"string","format":"uri","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"secondEmail":{"title":"Secondary email","type":"string","format":"email","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"mobilePhone":{"title":"Mobile phone","type":"string","mutability":"READ_WRITE","scope":"NONE","maxLength":100,"permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"primaryPhone":{"title":"Primary phone","type":"string","mutability":"READ_WRITE","scope":"NONE","maxLength":100,"permissions":[{"principal":"SELF","action":"HIDE"}],"master":{"type":"PROFILE_MASTER"}},"streetAddress":{"title":"Street address","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"HIDE"}],"master":{"type":"PROFILE_MASTER"}},"city":{"title":"City","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"HIDE"}],"master":{"type":"PROFILE_MASTER"}},"state":{"title":"State","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"HIDE"}],"master":{"type":"PROFILE_MASTER"}},"zipCode":{"title":"Zip code","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"HIDE"}],"master":{"type":"PROFILE_MASTER"}},"countryCode":{"title":"Country code","type":"string","format":"country-code","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"HIDE"}],"master":{"type":"PROFILE_MASTER"}},"postalAddress":{"title":"Postal Address","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"HIDE"}],"master":{"type":"PROFILE_MASTER"}},"preferredLanguage":{"title":"Preferred language","type":"string","format":"language-code","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"locale":{"title":"Locale","type":"string","format":"locale","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"timezone":{"title":"Time zone","type":"string","format":"timezone","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"userType":{"title":"User type","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"employeeNumber":{"title":"Employee number","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"costCenter":{"title":"Cost center","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"organization":{"title":"Organization","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"division":{"title":"Division","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"department":{"title":"Department","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"managerId":{"title":"ManagerId","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"manager":{"title":"Manager","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}}},"required":["login","firstName","lastName","email"]}},"type":"object","properties":{"profile":{"allOf":[{"$ref":"#/definitions/custom"},{"$ref":"#/definitions/base"}]}},"_links":{"self":{"rel":"self","href":"https://<your-test-okta-org>/api/v1/meta/schemas/user/osc1yzio24JjJKmvL1d7","method":"GET"},"type":{"rel":"type","href":"https://<your-test-okta-org>/api/v1/meta/types/user/oty1yzio24JjJKmvL1d7","method":"GET"}}}
+
+✅ Task execution finished. Output is stored in memory.
+
+📝 (Execution Mode) Ask about result or type 'Continue' to execute the next task:
+> c
+🔙 Continuing to the next task...
+✅ Task completed.
+
+
+⚙️ Now running task: Add Okta Attribute with data:
+{
+  "What is the name of the new Okta attribute?*": "Weather",
+  "What is the title/label of the new Okta attribute?": "Weather",
+  "What is the type of the new Okta attribute? (string/number/boolean)": "string"
+}
+▶️ Executing: curl -sS -X POST \
+  -H "Accept: application/json" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: SSWS $OKTA_API_TOKEN" \
+  -d '{"definitions": {"custom": {"id": "#custom", "type": "object", "properties": {"Weather": {"title": "Weather", "type": "string", "required": false}}}}}' \
+  "$OKTA_URL/api/v1/meta/schemas/user/default"
+
+📤 Output:
+{"id":"https://<your-test-okta-org>/meta/schemas/user/default","$schema":"http://json-schema.org/draft-04/schema#","name":"user","title":"User","description":"Okta user profile template with default permission settings","lastUpdated":"2026-08-11T04:04:20.000Z","created":"2021-11-29T18:15:48.000Z","definitions":{"custom":{"id":"#custom","type":"object","properties":{"address_four":{"title":"Address Four","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"address_five":{"title":"Address Five","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"birthdate":{"title":"birthdate","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"company_department":{"title":"Company Department","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"regional_department":{"title":"Reginonal Department","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"Location":{"title":"Location","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"Duration":{"title":"Duration","type":"number","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"Weather":{"title":"Weather","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"Weather_Note":{"title":"Weather Note","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}}},"required":[]},"base":{"id":"#base","type":"object","properties":{"login":{"title":"Username","type":"string","required":true,"mutability":"READ_WRITE","scope":"NONE","minLength":5,"maxLength":100,"permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"firstName":{"title":"First name","type":"string","required":true,"mutability":"READ_WRITE","scope":"NONE","minLength":1,"maxLength":50,"permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"lastName":{"title":"Last name","type":"string","required":true,"mutability":"READ_WRITE","scope":"NONE","minLength":1,"maxLength":50,"permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"middleName":{"title":"Middle name","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"honorificPrefix":{"title":"Honorific prefix","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"honorificSuffix":{"title":"Honorific suffix","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"email":{"title":"Primary email","type":"string","required":true,"format":"email","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"title":{"title":"Title","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"displayName":{"title":"Display name","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"nickName":{"title":"Nickname","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"profileUrl":{"title":"Profile Url","type":"string","format":"uri","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"secondEmail":{"title":"Secondary email","type":"string","format":"email","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"mobilePhone":{"title":"Mobile phone","type":"string","mutability":"READ_WRITE","scope":"NONE","maxLength":100,"permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"primaryPhone":{"title":"Primary phone","type":"string","mutability":"READ_WRITE","scope":"NONE","maxLength":100,"permissions":[{"principal":"SELF","action":"HIDE"}],"master":{"type":"PROFILE_MASTER"}},"streetAddress":{"title":"Street address","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"HIDE"}],"master":{"type":"PROFILE_MASTER"}},"city":{"title":"City","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"HIDE"}],"master":{"type":"PROFILE_MASTER"}},"state":{"title":"State","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"HIDE"}],"master":{"type":"PROFILE_MASTER"}},"zipCode":{"title":"Zip code","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"HIDE"}],"master":{"type":"PROFILE_MASTER"}},"countryCode":{"title":"Country code","type":"string","format":"country-code","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"HIDE"}],"master":{"type":"PROFILE_MASTER"}},"postalAddress":{"title":"Postal Address","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"HIDE"}],"master":{"type":"PROFILE_MASTER"}},"preferredLanguage":{"title":"Preferred language","type":"string","format":"language-code","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"locale":{"title":"Locale","type":"string","format":"locale","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"timezone":{"title":"Time zone","type":"string","format":"timezone","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"userType":{"title":"User type","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"employeeNumber":{"title":"Employee number","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"costCenter":{"title":"Cost center","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"organization":{"title":"Organization","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"division":{"title":"Division","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"department":{"title":"Department","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"managerId":{"title":"ManagerId","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"manager":{"title":"Manager","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}}},"required":["login","firstName","lastName","email"]}},"type":"object","properties":{"profile":{"allOf":[{"$ref":"#/definitions/custom"},{"$ref":"#/definitions/base"}]}},"_links":{"self":{"rel":"self","href":"https://<your-test-okta-org>/api/v1/meta/schemas/user/osc1yzio24JjJKmvL1d7","method":"GET"},"type":{"rel":"type","href":"https://<your-test-okta-org>/api/v1/meta/types/user/oty1yzio24JjJKmvL1d7","method":"GET"}}}
+
+✅ Task execution finished. Output is stored in memory.
+
+📝 (Execution Mode) Ask about result or type 'Continue' to execute the next task:
+> c
+🔙 Continuing to the next task...
+✅ Task completed.
+
+
+⚙️ Now running task: Add Okta Attribute with data:
+{
+  "What is the name of the new Okta attribute?*": "Weather_Note",
+  "What is the title/label of the new Okta attribute?": "Weather Note",
+  "What is the type of the new Okta attribute? (string/number/boolean)": "string"
+}
+▶️ Executing: curl -sS -X POST \
+  -H "Accept: application/json" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: SSWS $OKTA_API_TOKEN" \
+  -d '{"definitions": {"custom": {"id": "#custom", "type": "object", "properties": {"Weather_Note": {"title": "Weather Note", "type": "string", "required": false}}}}}' \
+  "$OKTA_URL/api/v1/meta/schemas/user/default"
+
+📤 Output:
+{"id":"https://<your-test-okta-org>/meta/schemas/user/default","$schema":"http://json-schema.org/draft-04/schema#","name":"user","title":"User","description":"Okta user profile template with default permission settings","lastUpdated":"2026-08-11T04:04:20.000Z","created":"2021-11-29T18:15:48.000Z","definitions":{"custom":{"id":"#custom","type":"object","properties":{"address_four":{"title":"Address Four","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"address_five":{"title":"Address Five","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"birthdate":{"title":"birthdate","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"company_department":{"title":"Company Department","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"regional_department":{"title":"Reginonal Department","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"Location":{"title":"Location","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"Duration":{"title":"Duration","type":"number","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"Weather":{"title":"Weather","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"Weather_Note":{"title":"Weather Note","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}}},"required":[]},"base":{"id":"#base","type":"object","properties":{"login":{"title":"Username","type":"string","required":true,"mutability":"READ_WRITE","scope":"NONE","minLength":5,"maxLength":100,"permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"firstName":{"title":"First name","type":"string","required":true,"mutability":"READ_WRITE","scope":"NONE","minLength":1,"maxLength":50,"permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"lastName":{"title":"Last name","type":"string","required":true,"mutability":"READ_WRITE","scope":"NONE","minLength":1,"maxLength":50,"permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"middleName":{"title":"Middle name","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"honorificPrefix":{"title":"Honorific prefix","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"honorificSuffix":{"title":"Honorific suffix","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"email":{"title":"Primary email","type":"string","required":true,"format":"email","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"title":{"title":"Title","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"displayName":{"title":"Display name","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"nickName":{"title":"Nickname","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"profileUrl":{"title":"Profile Url","type":"string","format":"uri","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"secondEmail":{"title":"Secondary email","type":"string","format":"email","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"mobilePhone":{"title":"Mobile phone","type":"string","mutability":"READ_WRITE","scope":"NONE","maxLength":100,"permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"primaryPhone":{"title":"Primary phone","type":"string","mutability":"READ_WRITE","scope":"NONE","maxLength":100,"permissions":[{"principal":"SELF","action":"HIDE"}],"master":{"type":"PROFILE_MASTER"}},"streetAddress":{"title":"Street address","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"HIDE"}],"master":{"type":"PROFILE_MASTER"}},"city":{"title":"City","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"HIDE"}],"master":{"type":"PROFILE_MASTER"}},"state":{"title":"State","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"HIDE"}],"master":{"type":"PROFILE_MASTER"}},"zipCode":{"title":"Zip code","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"HIDE"}],"master":{"type":"PROFILE_MASTER"}},"countryCode":{"title":"Country code","type":"string","format":"country-code","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"HIDE"}],"master":{"type":"PROFILE_MASTER"}},"postalAddress":{"title":"Postal Address","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"HIDE"}],"master":{"type":"PROFILE_MASTER"}},"preferredLanguage":{"title":"Preferred language","type":"string","format":"language-code","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"locale":{"title":"Locale","type":"string","format":"locale","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"timezone":{"title":"Time zone","type":"string","format":"timezone","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"userType":{"title":"User type","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"employeeNumber":{"title":"Employee number","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"costCenter":{"title":"Cost center","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"organization":{"title":"Organization","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"division":{"title":"Division","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"department":{"title":"Department","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"managerId":{"title":"ManagerId","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"manager":{"title":"Manager","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}}},"required":["login","firstName","lastName","email"]}},"type":"object","properties":{"profile":{"allOf":[{"$ref":"#/definitions/custom"},{"$ref":"#/definitions/base"}]}},"_links":{"self":{"rel":"self","href":"https://<your-test-okta-org>/api/v1/meta/schemas/user/osc1yzio24JjJKmvL1d7","method":"GET"},"type":{"rel":"type","href":"https://<your-test-okta-org>/api/v1/meta/types/user/oty1yzio24JjJKmvL1d7","method":"GET"}}}
+
+✅ Task execution finished. Output is stored in memory.
+
+📝 (Execution Mode) Ask about result or type 'Continue' to execute the next task:
+> c
+🔙 Continuing to the next task...
+✅ Task completed.
+
+
+⚙️ Now running task: Update Okta User with data:
+{
+  "What is the ID of the user? (If a user was just created or selected, answer with exactly '${Create Okta User.id}' or '${Find a user by first name and last name.id}'. Otherwise, provide the actual ID)**": "${Create Okta User.id}",
+  "What is the name of the attribute to update?*": "Location",
+  "What is the value to set for this attribute?*": "Washington, D.C."
+}
+▶️ Executing: curl -sS -X POST \
+  -H "Accept: application/json" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: SSWS $OKTA_API_TOKEN" \
+  -d '{"profile": {"Location": "Washington, D.C."}}' \
+  "$OKTA_URL/api/v1/users/00u12ew3a2gLxdVy11d8"
+
+📤 Output:
+{"id":"00u12ew3a2gLxdVy11d8","status":"ACTIVE","created":"2026-08-11T17:30:24.000Z","activated":"2026-08-11T17:30:24.000Z","statusChanged":"2026-08-11T17:30:24.000Z","lastLogin":null,"lastUpdated":"2026-08-11T17:31:55.000Z","passwordChanged":"2026-08-11T17:30:24.000Z","type":{"id":"oty1yzio24JjJKmvL1d7"},"profile":{"firstName":"Kerry","lastName":"Smith","mobilePhone":null,"secondEmail":null,"title":"manager","login":"kerry.smith@gmail.com","email":"kerry.smith@gmail.com","Location":"Washington, D.C."},"credentials":{"password":{},"provider":{"type":"OKTA","name":"OKTA"}},"_links":{"suspend":{"href":"https://<your-test-okta-org>/api/v1/users/00u12ew3a2gLxdVy11d8/lifecycle/suspend","method":"POST"},"schema":{"href":"https://<your-test-okta-org>/api/v1/meta/schemas/user/osc1yzio24JjJKmvL1d7"},"resetPassword":{"href":"https://<your-test-okta-org>/api/v1/users/00u12ew3a2gLxdVy11d8/lifecycle/reset_password","method":"POST"},"forgotPassword":{"href":"https://<your-test-okta-org>/api/v1/users/00u12ew3a2gLxdVy11d8/credentials/forgot_password","method":"POST"},"expirePassword":{"href":"https://<your-test-okta-org>/api/v1/users/00u12ew3a2gLxdVy11d8/lifecycle/expire_password","method":"POST"},"changeRecoveryQuestion":{"href":"https://<your-test-okta-org>/api/v1/users/00u12ew3a2gLxdVy11d8/credentials/change_recovery_question","method":"POST"},"self":{"href":"https://<your-test-okta-org>/api/v1/users/00u12ew3a2gLxdVy11d8"},"resetFactors":{"href":"https://<your-test-okta-org>/api/v1/users/00u12ew3a2gLxdVy11d8/lifecycle/reset_factors","method":"POST"},"type":{"href":"https://<your-test-okta-org>/api/v1/meta/types/user/oty1yzio24JjJKmvL1d7"},"changePassword":{"href":"https://<your-test-okta-org>/api/v1/users/00u12ew3a2gLxdVy11d8/credentials/change_password","method":"POST"},"deactivate":{"href":"https://<your-test-okta-org>/api/v1/users/00u12ew3a2gLxdVy11d8/lifecycle/deactivate","method":"POST"}}}
+
+✅ Task execution finished. Output is stored in memory.
+
+📝 (Execution Mode) Ask about result or type 'Continue' to execute the next task:
+> > c
+🔙 Continuing to the next task...
+✅ Task completed.
+
+
+⚙️ Now running task: Add Okta Attribute with data:
+{
+  "What is the name of the new Okta attribute?*": "Duration",
+  "What is the title/label of the new Okta attribute?": "Duration",
+  "What is the type of the new Okta attribute? (string/number/boolean)": "number"
+}
+▶️ Executing: curl -sS -X POST \
+  -H "Accept: application/json" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: SSWS $OKTA_API_TOKEN" \
+  -d '{"definitions": {"custom": {"id": "#custom", "type": "object", "properties": {"Duration": {"title": "Duration", "type": "number", "required": false}}}}}' \
+  "$OKTA_URL/api/v1/meta/schemas/user/default"
+
+📤 Output:
+{"id":"https://<your-test-okta-org>/meta/schemas/user/default","$schema":"http://json-schema.org/draft-04/schema#","name":"user","title":"User","description":"Okta user profile template with default permission settings","lastUpdated":"2026-08-11T04:04:20.000Z","created":"2021-11-29T18:15:48.000Z","definitions":{"custom":{"id":"#custom","type":"object","properties":{"address_four":{"title":"Address Four","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"address_five":{"title":"Address Five","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"birthdate":{"title":"birthdate","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"company_department":{"title":"Company Department","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"regional_department":{"title":"Reginonal Department","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"Location":{"title":"Location","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"Duration":{"title":"Duration","type":"number","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"Weather":{"title":"Weather","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"Weather_Note":{"title":"Weather Note","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}}},"required":[]},"base":{"id":"#base","type":"object","properties":{"login":{"title":"Username","type":"string","required":true,"mutability":"READ_WRITE","scope":"NONE","minLength":5,"maxLength":100,"permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"firstName":{"title":"First name","type":"string","required":true,"mutability":"READ_WRITE","scope":"NONE","minLength":1,"maxLength":50,"permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"lastName":{"title":"Last name","type":"string","required":true,"mutability":"READ_WRITE","scope":"NONE","minLength":1,"maxLength":50,"permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"middleName":{"title":"Middle name","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"honorificPrefix":{"title":"Honorific prefix","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"honorificSuffix":{"title":"Honorific suffix","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"email":{"title":"Primary email","type":"string","required":true,"format":"email","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"title":{"title":"Title","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"displayName":{"title":"Display name","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"nickName":{"title":"Nickname","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"profileUrl":{"title":"Profile Url","type":"string","format":"uri","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"secondEmail":{"title":"Secondary email","type":"string","format":"email","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"mobilePhone":{"title":"Mobile phone","type":"string","mutability":"READ_WRITE","scope":"NONE","maxLength":100,"permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"primaryPhone":{"title":"Primary phone","type":"string","mutability":"READ_WRITE","scope":"NONE","maxLength":100,"permissions":[{"principal":"SELF","action":"HIDE"}],"master":{"type":"PROFILE_MASTER"}},"streetAddress":{"title":"Street address","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"HIDE"}],"master":{"type":"PROFILE_MASTER"}},"city":{"title":"City","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"HIDE"}],"master":{"type":"PROFILE_MASTER"}},"state":{"title":"State","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"HIDE"}],"master":{"type":"PROFILE_MASTER"}},"zipCode":{"title":"Zip code","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"HIDE"}],"master":{"type":"PROFILE_MASTER"}},"countryCode":{"title":"Country code","type":"string","format":"country-code","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"HIDE"}],"master":{"type":"PROFILE_MASTER"}},"postalAddress":{"title":"Postal Address","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"HIDE"}],"master":{"type":"PROFILE_MASTER"}},"preferredLanguage":{"title":"Preferred language","type":"string","format":"language-code","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"locale":{"title":"Locale","type":"string","format":"locale","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"timezone":{"title":"Time zone","type":"string","format":"timezone","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"userType":{"title":"User type","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"employeeNumber":{"title":"Employee number","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"costCenter":{"title":"Cost center","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"organization":{"title":"Organization","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"division":{"title":"Division","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"department":{"title":"Department","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"managerId":{"title":"ManagerId","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"manager":{"title":"Manager","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}}},"required":["login","firstName","lastName","email"]}},"type":"object","properties":{"profile":{"allOf":[{"$ref":"#/definitions/custom"},{"$ref":"#/definitions/base"}]}},"_links":{"self":{"rel":"self","href":"https://<your-test-okta-org>/api/v1/meta/schemas/user/osc1yzio24JjJKmvL1d7","method":"GET"},"type":{"rel":"type","href":"https://<your-test-okta-org>/api/v1/meta/types/user/oty1yzio24JjJKmvL1d7","method":"GET"}}}
+
+✅ Task execution finished. Output is stored in memory.
+
+📝 (Execution Mode) Ask about result or type 'Continue' to execute the next task:
+> c
+🔙 Continuing to the next task...
+✅ Task completed.
+
+
+⚙️ Now running task: Add Okta Attribute with data:
+{
+  "What is the name of the new Okta attribute?*": "Weather",
+  "What is the title/label of the new Okta attribute?": "Weather",
+  "What is the type of the new Okta attribute? (string/number/boolean)": "string"
+}
+▶️ Executing: curl -sS -X POST \
+  -H "Accept: application/json" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: SSWS $OKTA_API_TOKEN" \
+  -d '{"definitions": {"custom": {"id": "#custom", "type": "object", "properties": {"Weather": {"title": "Weather", "type": "string", "required": false}}}}}' \
+  "$OKTA_URL/api/v1/meta/schemas/user/default"
+
+📤 Output:
+{"id":"https://<your-test-okta-org>/meta/schemas/user/default","$schema":"http://json-schema.org/draft-04/schema#","name":"user","title":"User","description":"Okta user profile template with default permission settings","lastUpdated":"2026-08-11T04:04:20.000Z","created":"2021-11-29T18:15:48.000Z","definitions":{"custom":{"id":"#custom","type":"object","properties":{"address_four":{"title":"Address Four","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"address_five":{"title":"Address Five","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"birthdate":{"title":"birthdate","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"company_department":{"title":"Company Department","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"regional_department":{"title":"Reginonal Department","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"Location":{"title":"Location","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"Duration":{"title":"Duration","type":"number","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"Weather":{"title":"Weather","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"Weather_Note":{"title":"Weather Note","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}}},"required":[]},"base":{"id":"#base","type":"object","properties":{"login":{"title":"Username","type":"string","required":true,"mutability":"READ_WRITE","scope":"NONE","minLength":5,"maxLength":100,"permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"firstName":{"title":"First name","type":"string","required":true,"mutability":"READ_WRITE","scope":"NONE","minLength":1,"maxLength":50,"permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"lastName":{"title":"Last name","type":"string","required":true,"mutability":"READ_WRITE","scope":"NONE","minLength":1,"maxLength":50,"permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"middleName":{"title":"Middle name","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"honorificPrefix":{"title":"Honorific prefix","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"honorificSuffix":{"title":"Honorific suffix","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"email":{"title":"Primary email","type":"string","required":true,"format":"email","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"title":{"title":"Title","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"displayName":{"title":"Display name","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"nickName":{"title":"Nickname","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"profileUrl":{"title":"Profile Url","type":"string","format":"uri","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"secondEmail":{"title":"Secondary email","type":"string","format":"email","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"mobilePhone":{"title":"Mobile phone","type":"string","mutability":"READ_WRITE","scope":"NONE","maxLength":100,"permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"primaryPhone":{"title":"Primary phone","type":"string","mutability":"READ_WRITE","scope":"NONE","maxLength":100,"permissions":[{"principal":"SELF","action":"HIDE"}],"master":{"type":"PROFILE_MASTER"}},"streetAddress":{"title":"Street address","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"HIDE"}],"master":{"type":"PROFILE_MASTER"}},"city":{"title":"City","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"HIDE"}],"master":{"type":"PROFILE_MASTER"}},"state":{"title":"State","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"HIDE"}],"master":{"type":"PROFILE_MASTER"}},"zipCode":{"title":"Zip code","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"HIDE"}],"master":{"type":"PROFILE_MASTER"}},"countryCode":{"title":"Country code","type":"string","format":"country-code","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"HIDE"}],"master":{"type":"PROFILE_MASTER"}},"postalAddress":{"title":"Postal Address","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"HIDE"}],"master":{"type":"PROFILE_MASTER"}},"preferredLanguage":{"title":"Preferred language","type":"string","format":"language-code","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"locale":{"title":"Locale","type":"string","format":"locale","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"timezone":{"title":"Time zone","type":"string","format":"timezone","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"userType":{"title":"User type","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"employeeNumber":{"title":"Employee number","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"costCenter":{"title":"Cost center","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"organization":{"title":"Organization","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"division":{"title":"Division","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"department":{"title":"Department","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"managerId":{"title":"ManagerId","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"manager":{"title":"Manager","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}}},"required":["login","firstName","lastName","email"]}},"type":"object","properties":{"profile":{"allOf":[{"$ref":"#/definitions/custom"},{"$ref":"#/definitions/base"}]}},"_links":{"self":{"rel":"self","href":"https://<your-test-okta-org>/api/v1/meta/schemas/user/osc1yzio24JjJKmvL1d7","method":"GET"},"type":{"rel":"type","href":"https://<your-test-okta-org>/api/v1/meta/types/user/oty1yzio24JjJKmvL1d7","method":"GET"}}}
+
+✅ Task execution finished. Output is stored in memory.
+
+📝 (Execution Mode) Ask about result or type 'Continue' to execute the next task:
+> c
+🔙 Continuing to the next task...
+✅ Task completed.
+
+
+⚙️ Now running task: Add Okta Attribute with data:
+{
+  "What is the name of the new Okta attribute?*": "Weather_Note",
+  "What is the title/label of the new Okta attribute?": "Weather Note",
+  "What is the type of the new Okta attribute? (string/number/boolean)": "string"
+}
+▶️ Executing: curl -sS -X POST \
+  -H "Accept: application/json" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: SSWS $OKTA_API_TOKEN" \
+  -d '{"definitions": {"custom": {"id": "#custom", "type": "object", "properties": {"Weather_Note": {"title": "Weather Note", "type": "string", "required": false}}}}}' \
+  "$OKTA_URL/api/v1/meta/schemas/user/default"
+
+📤 Output:
+{"id":"https://<your-test-okta-org>/meta/schemas/user/default","$schema":"http://json-schema.org/draft-04/schema#","name":"user","title":"User","description":"Okta user profile template with default permission settings","lastUpdated":"2026-08-11T04:04:20.000Z","created":"2021-11-29T18:15:48.000Z","definitions":{"custom":{"id":"#custom","type":"object","properties":{"address_four":{"title":"Address Four","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"address_five":{"title":"Address Five","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"birthdate":{"title":"birthdate","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"company_department":{"title":"Company Department","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"regional_department":{"title":"Reginonal Department","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"Location":{"title":"Location","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"Duration":{"title":"Duration","type":"number","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"Weather":{"title":"Weather","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"Weather_Note":{"title":"Weather Note","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}}},"required":[]},"base":{"id":"#base","type":"object","properties":{"login":{"title":"Username","type":"string","required":true,"mutability":"READ_WRITE","scope":"NONE","minLength":5,"maxLength":100,"permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"firstName":{"title":"First name","type":"string","required":true,"mutability":"READ_WRITE","scope":"NONE","minLength":1,"maxLength":50,"permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"lastName":{"title":"Last name","type":"string","required":true,"mutability":"READ_WRITE","scope":"NONE","minLength":1,"maxLength":50,"permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"middleName":{"title":"Middle name","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"honorificPrefix":{"title":"Honorific prefix","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"honorificSuffix":{"title":"Honorific suffix","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"email":{"title":"Primary email","type":"string","required":true,"format":"email","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"title":{"title":"Title","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"displayName":{"title":"Display name","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"nickName":{"title":"Nickname","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"profileUrl":{"title":"Profile Url","type":"string","format":"uri","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"secondEmail":{"title":"Secondary email","type":"string","format":"email","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"mobilePhone":{"title":"Mobile phone","type":"string","mutability":"READ_WRITE","scope":"NONE","maxLength":100,"permissions":[{"principal":"SELF","action":"READ_WRITE"}],"master":{"type":"PROFILE_MASTER"}},"primaryPhone":{"title":"Primary phone","type":"string","mutability":"READ_WRITE","scope":"NONE","maxLength":100,"permissions":[{"principal":"SELF","action":"HIDE"}],"master":{"type":"PROFILE_MASTER"}},"streetAddress":{"title":"Street address","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"HIDE"}],"master":{"type":"PROFILE_MASTER"}},"city":{"title":"City","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"HIDE"}],"master":{"type":"PROFILE_MASTER"}},"state":{"title":"State","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"HIDE"}],"master":{"type":"PROFILE_MASTER"}},"zipCode":{"title":"Zip code","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"HIDE"}],"master":{"type":"PROFILE_MASTER"}},"countryCode":{"title":"Country code","type":"string","format":"country-code","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"HIDE"}],"master":{"type":"PROFILE_MASTER"}},"postalAddress":{"title":"Postal Address","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"HIDE"}],"master":{"type":"PROFILE_MASTER"}},"preferredLanguage":{"title":"Preferred language","type":"string","format":"language-code","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"locale":{"title":"Locale","type":"string","format":"locale","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"timezone":{"title":"Time zone","type":"string","format":"timezone","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"userType":{"title":"User type","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"employeeNumber":{"title":"Employee number","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"costCenter":{"title":"Cost center","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"organization":{"title":"Organization","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"division":{"title":"Division","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"department":{"title":"Department","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"managerId":{"title":"ManagerId","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}},"manager":{"title":"Manager","type":"string","mutability":"READ_WRITE","scope":"NONE","permissions":[{"principal":"SELF","action":"READ_ONLY"}],"master":{"type":"PROFILE_MASTER"}}},"required":["login","firstName","lastName","email"]}},"type":"object","properties":{"profile":{"allOf":[{"$ref":"#/definitions/custom"},{"$ref":"#/definitions/base"}]}},"_links":{"self":{"rel":"self","href":"https://<your-test-okta-org>/api/v1/meta/schemas/user/osc1yzio24JjJKmvL1d7","method":"GET"},"type":{"rel":"type","href":"https://<your-test-okta-org>/api/v1/meta/types/user/oty1yzio24JjJKmvL1d7","method":"GET"}}}
+
+✅ Task execution finished. Output is stored in memory.
+
+📝 (Execution Mode) Ask about result or type 'Continue' to execute the next task:
+> c
+🔙 Continuing to the next task...
+✅ Task completed.
+
+
+⚙️ Now running task: Update Okta User with data:
+{
+  "What is the ID of the user? (If a user was just created or selected, answer with exactly '${Create Okta User.id}' or '${Find a user by first name and last name.id}'. Otherwise, provide the actual ID)**": "${Create Okta User.id}",
+  "What is the name of the attribute to update?*": "Location",
+  "What is the value to set for this attribute?*": "Washington, D.C."
+}
+▶️ Executing: curl -sS -X POST \
+  -H "Accept: application/json" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: SSWS $OKTA_API_TOKEN" \
+  -d '{"profile": {"Location": "Washington, D.C."}}' \
+  "$OKTA_URL/api/v1/users/00u12ew3a2gLxdVy11d8"
+
+📤 Output:
+{"id":"00u12ew3a2gLxdVy11d8","status":"ACTIVE","created":"2026-08-11T17:30:24.000Z","activated":"2026-08-11T17:30:24.000Z","statusChanged":"2026-08-11T17:30:24.000Z","lastLogin":null,"lastUpdated":"2026-08-11T17:31:55.000Z","passwordChanged":"2026-08-11T17:30:24.000Z","type":{"id":"oty1yzio24JjJKmvL1d7"},"profile":{"firstName":"Kerry","lastName":"Smith","mobilePhone":null,"secondEmail":null,"title":"manager","login":"kerry.smith@gmail.com","email":"kerry.smith@gmail.com","Location":"Washington, D.C."},"credentials":{"password":{},"provider":{"type":"OKTA","name":"OKTA"}},"_links":{"suspend":{"href":"https://<your-test-okta-org>/api/v1/users/00u12ew3a2gLxdVy11d8/lifecycle/suspend","method":"POST"},"schema":{"href":"https://<your-test-okta-org>/api/v1/meta/schemas/user/osc1yzio24JjJKmvL1d7"},"resetPassword":{"href":"https://<your-test-okta-org>/api/v1/users/00u12ew3a2gLxdVy11d8/lifecycle/reset_password","method":"POST"},"forgotPassword":{"href":"https://<your-test-okta-org>/api/v1/users/00u12ew3a2gLxdVy11d8/credentials/forgot_password","method":"POST"},"expirePassword":{"href":"https://<your-test-okta-org>/api/v1/users/00u12ew3a2gLxdVy11d8/lifecycle/expire_password","method":"POST"},"changeRecoveryQuestion":{"href":"https://<your-test-okta-org>/api/v1/users/00u12ew3a2gLxdVy11d8/credentials/change_recovery_question","method":"POST"},"self":{"href":"https://<your-test-okta-org>/api/v1/users/00u12ew3a2gLxdVy11d8"},"resetFactors":{"href":"https://<your-test-okta-org>/api/v1/users/00u12ew3a2gLxdVy11d8/lifecycle/reset_factors","method":"POST"},"type":{"href":"https://<your-test-okta-org>/api/v1/meta/types/user/oty1yzio24JjJKmvL1d7"},"changePassword":{"href":"https://<your-test-okta-org>/api/v1/users/00u12ew3a2gLxdVy11d8/credentials/change_password","method":"POST"},"deactivate":{"href":"https://<your-test-okta-org>/api/v1/users/00u12ew3a2gLxdVy11d8/lifecycle/deactivate","method":"POST"}}}
+
+✅ Task execution finished. Output is stored in memory.
+
+📝 (Execution Mode) Ask about result or type 'Continue' to execute the next task:
+> c
+🔙 Continuing to the next task...
+✅ Task completed.
+
+
+⚙️ Now running task: Update Okta User with data:
+{
+  "What is the ID of the user? (If a user was just created or selected, answer with exactly '${Create Okta User.id}' or '${Find a user by first name and last name.id}'. Otherwise, provide the actual ID)**": "${Create Okta User.id}",
+  "What is the name of the attribute to update?*": "Duration",
+  "What is the value to set for this attribute?*": "36"
+}
+▶️ Executing: curl -sS -X POST \
+  -H "Accept: application/json" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: SSWS $OKTA_API_TOKEN" \
+  -d '{"profile": {"Duration": "36"}}' \
+  "$OKTA_URL/api/v1/users/00u12ew3a2gLxdVy11d8"
+
+📤 Output:
+{"id":"00u12ew3a2gLxdVy11d8","status":"ACTIVE","created":"2026-08-11T17:30:24.000Z","activated":"2026-08-11T17:30:24.000Z","statusChanged":"2026-08-11T17:30:24.000Z","lastLogin":null,"lastUpdated":"2026-08-11T17:32:55.000Z","passwordChanged":"2026-08-11T17:30:24.000Z","type":{"id":"oty1yzio24JjJKmvL1d7"},"profile":{"firstName":"Kerry","lastName":"Smith","mobilePhone":null,"secondEmail":null,"Duration":36,"title":"manager","login":"kerry.smith@gmail.com","email":"kerry.smith@gmail.com","Location":"Washington, D.C."},"credentials":{"password":{},"provider":{"type":"OKTA","name":"OKTA"}},"_links":{"suspend":{"href":"https://<your-test-okta-org>/api/v1/users/00u12ew3a2gLxdVy11d8/lifecycle/suspend","method":"POST"},"schema":{"href":"https://<your-test-okta-org>/api/v1/meta/schemas/user/osc1yzio24JjJKmvL1d7"},"resetPassword":{"href":"https://<your-test-okta-org>/api/v1/users/00u12ew3a2gLxdVy11d8/lifecycle/reset_password","method":"POST"},"forgotPassword":{"href":"https://<your-test-okta-org>/api/v1/users/00u12ew3a2gLxdVy11d8/credentials/forgot_password","method":"POST"},"expirePassword":{"href":"https://<your-test-okta-org>/api/v1/users/00u12ew3a2gLxdVy11d8/lifecycle/expire_password","method":"POST"},"changeRecoveryQuestion":{"href":"https://<your-test-okta-org>/api/v1/users/00u12ew3a2gLxdVy11d8/credentials/change_recovery_question","method":"POST"},"self":{"href":"https://<your-test-okta-org>/api/v1/users/00u12ew3a2gLxdVy11d8"},"resetFactors":{"href":"https://<your-test-okta-org>/api/v1/users/00u12ew3a2gLxdVy11d8/lifecycle/reset_factors","method":"POST"},"type":{"href":"https://<your-test-okta-org>/api/v1/meta/types/user/oty1yzio24JjJKmvL1d7"},"changePassword":{"href":"https://<your-test-okta-org>/api/v1/users/00u12ew3a2gLxdVy11d8/credentials/change_password","method":"POST"},"deactivate":{"href":"https://<your-test-okta-org>/api/v1/users/00u12ew3a2gLxdVy11d8/lifecycle/deactivate","method":"POST"}}}
+
+✅ Task execution finished. Output is stored in memory.
+
+📝 (Execution Mode) Ask about result or type 'Continue' to execute the next task:
+> c
+🔙 Continuing to the next task...
+✅ Task completed.
+
+
+⚙️ Now running task: Update Okta User with data:
+{
+  "What is the ID of the user? (If a user was just created or selected, answer with exactly '${Create Okta User.id}' or '${Find a user by first name and last name.id}'. Otherwise, provide the actual ID)**": "${Create Okta User.id}",
+  "What is the name of the attribute to update?*": "Weather",
+  "What is the value to set for this attribute?*": "${Get Weather in Period.weather}"
+}
+▶️ Executing: curl -sS -X POST \
+  -H "Accept: application/json" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: SSWS $OKTA_API_TOKEN" \
+  -d '{"profile": {"Weather": "[{'date': '2026-08-26', 'temp_max_c': 26.2, 'temp_min_c': 16.5, 'estimated': True}, {'date': '2026-08-27', 'temp_max_c': 23.9, 'temp_min_c': 14.9, 'estimated': True}, {'date': '2026-08-28', 'temp_max_c': 25.9, 'temp_min_c': 14.8, 'estimated': True}, {'date': '2026-08-29', 'temp_max_c': 25.8, 'temp_min_c': 16.8, 'estimated': True}, {'date': '2026-08-30', 'temp_max_c': 24.5, 'temp_min_c': 13.6, 'estimated': True}, {'date': '2026-08-31', 'temp_max_c': 26.3, 'temp_min_c': 14.4, 'estimated': True}, {'date': '2026-09-01', 'temp_max_c': 25.9, 'temp_min_c': 15.3, 'estimated': True}, {'date': '2026-09-02', 'temp_max_c': 24.6, 'temp_min_c': 15.3, 'estimated': True}, {'date': '2026-09-03', 'temp_max_c': 28.5, 'temp_min_c': 15.2, 'estimated': True}, {'date': '2026-09-04', 'temp_max_c': 30.8, 'temp_min_c': 17.7, 'estimated': True}, {'date': '2026-09-05', 'temp_max_c': 32.3, 'temp_min_c': 17.9, 'estimated': True}, {'date': '2026-09-06', 'temp_max_c': 32.3, 'temp_min_c': 20.7, 'estimated': True}, {'date': '2026-09-07', 'temp_max_c': 24.2, 'temp_min_c': 16.2, 'estimated': True}, {'date': '2026-09-08', 'temp_max_c': 23.3, 'temp_min_c': 13.4, 'estimated': True}, {'date': '2026-09-09', 'temp_max_c': 24.5, 'temp_min_c': 13.2, 'estimated': True}, {'date': '2026-09-10', 'temp_max_c': 22.7, 'temp_min_c': 16.4, 'estimated': True}, {'date': '2026-09-11', 'temp_max_c': 25.0, 'temp_min_c': 17.1, 'estimated': True}, {'date': '2026-09-12', 'temp_max_c': 26.8, 'temp_min_c': 16.9, 'estimated': True}, {'date': '2026-09-13', 'temp_max_c': 28.6, 'temp_min_c': 15.9, 'estimated': True}, {'date': '2026-09-14', 'temp_max_c': 29.4, 'temp_min_c': 17.1, 'estimated': True}, {'date': '2026-09-15', 'temp_max_c': 27.0, 'temp_min_c': 18.1, 'estimated': True}, {'date': '2026-09-16', 'temp_max_c': 23.1, 'temp_min_c': 16.4, 'estimated': True}, {'date': '2026-09-17', 'temp_max_c': 21.0, 'temp_min_c': 16.2, 'estimated': True}, {'date': '2026-09-18', 'temp_max_c': 26.6, 'temp_min_c': 17.1, 'estimated': True}, {'date': '2026-09-19', 'temp_max_c': 29.0, 'temp_min_c': 17.8, 'estimated': True}, {'date': '2026-09-20', 'temp_max_c': 23.7, 'temp_min_c': 17.6, 'estimated': True}, {'date': '2026-09-21', 'temp_max_c': 23.3, 'temp_min_c': 17.4, 'estimated': True}, {'date': '2026-09-22', 'temp_max_c': 25.5, 'temp_min_c': 15.0, 'estimated': True}, {'date': '2026-09-23', 'temp_max_c': 28.5, 'temp_min_c': 17.2, 'estimated': True}, {'date': '2026-09-24', 'temp_max_c': 24.0, 'temp_min_c': 18.1, 'estimated': True}, {'date': '2026-09-25', 'temp_max_c': 28.3, 'temp_min_c': 20.7, 'estimated': True}, {'date': '2026-09-26', 'temp_max_c': 26.8, 'temp_min_c': 19.4, 'estimated': True}, {'date': '2026-09-27', 'temp_max_c': 23.7, 'temp_min_c': 19.3, 'estimated': True}, {'date': '2026-09-28', 'temp_max_c': 26.6, 'temp_min_c': 17.5, 'estimated': True}, {'date': '2026-09-29', 'temp_max_c': 23.1, 'temp_min_c': 18.5, 'estimated': True}, {'date': '2026-09-30', 'temp_max_c': 23.5, 'temp_min_c': 19.3, 'estimated': True}, {'date': '2026-10-01', 'temp_max_c': 22.2, 'temp_min_c': 15.1, 'estimated': True}, {'date': '2026-10-02', 'temp_max_c': 21.0, 'temp_min_c': 10.2, 'estimated': True}, {'date': '2026-10-03', 'temp_max_c': 21.5, 'temp_min_c': 9.9, 'estimated': True}, {'date': '2026-10-04', 'temp_max_c': 24.8, 'temp_min_c': 10.1, 'estimated': True}, {'date': '2026-10-05', 'temp_max_c': 26.7, 'temp_min_c': 11.3, 'estimated': True}, {'date': '2026-10-06', 'temp_max_c': 28.4, 'temp_min_c': 13.7, 'estimated': True}, {'date': '2026-10-07', 'temp_max_c': 26.9, 'temp_min_c': 15.8, 'estimated': True}, {'date': '2026-10-08', 'temp_max_c': 22.2, 'temp_min_c': 14.2, 'estimated': True}, {'date': '2026-10-09', 'temp_max_c': 17.8, 'temp_min_c': 9.7, 'estimated': True}, {'date': '2026-10-10', 'temp_max_c': 17.9, 'temp_min_c': 8.8, 'estimated': True}, {'date': '2026-10-11', 'temp_max_c': 20.9, 'temp_min_c': 9.9, 'estimated': True}, {'date': '2026-10-12', 'temp_max_c': 19.0, 'temp_min_c': 14.8, 'estimated': True}, {'date': '2026-10-13', 'temp_max_c': 16.5, 'temp_min_c': 13.3, 'estimated': True}, {'date': '2026-10-14', 'temp_max_c': 18.5, 'temp_min_c': 12.9, 'estimated': True}, {'date': '2026-10-15', 'temp_max_c': 21.5, 'temp_min_c': 12.0, 'estimated': True}, {'date': '2026-10-16', 'temp_max_c': 17.1, 'temp_min_c': 8.1, 'estimated': True}]"}}' \
+  "$OKTA_URL/api/v1/users/00u12ew3a2gLxdVy11d8"
+
+📤 Output:
+{"id":"00u12ew3a2gLxdVy11d8","status":"ACTIVE","created":"2026-08-11T17:30:24.000Z","activated":"2026-08-11T17:30:24.000Z","statusChanged":"2026-08-11T17:30:24.000Z","lastLogin":null,"lastUpdated":"2026-08-11T17:32:57.000Z","passwordChanged":"2026-08-11T17:30:24.000Z","type":{"id":"oty1yzio24JjJKmvL1d7"},"profile":{"Weather":"[{date: 2026-08-26, temp_max_c: 26.2, temp_min_c: 16.5, estimated: True}, {date: 2026-08-27, temp_max_c: 23.9, temp_min_c: 14.9, estimated: True}, {date: 2026-08-28, temp_max_c: 25.9, temp_min_c: 14.8, estimated: True}, {date: 2026-08-29, temp_max_c: 25.8, temp_min_c: 16.8, estimated: True}, {date: 2026-08-30, temp_max_c: 24.5, temp_min_c: 13.6, estimated: True}, {date: 2026-08-31, temp_max_c: 26.3, temp_min_c: 14.4, estimated: True}, {date: 2026-09-01, temp_max_c: 25.9, temp_min_c: 15.3, estimated: True}, {date: 2026-09-02, temp_max_c: 24.6, temp_min_c: 15.3, estimated: True}, {date: 2026-09-03, temp_max_c: 28.5, temp_min_c: 15.2, estimated: True}, {date: 2026-09-04, temp_max_c: 30.8, temp_min_c: 17.7, estimated: True}, {date: 2026-09-05, temp_max_c: 32.3, temp_min_c: 17.9, estimated: True}, {date: 2026-09-06, temp_max_c: 32.3, temp_min_c: 20.7, estimated: True}, {date: 2026-09-07, temp_max_c: 24.2, temp_min_c: 16.2, estimated: True}, {date: 2026-09-08, temp_max_c: 23.3, temp_min_c: 13.4, estimated: True}, {date: 2026-09-09, temp_max_c: 24.5, temp_min_c: 13.2, estimated: True}, {date: 2026-09-10, temp_max_c: 22.7, temp_min_c: 16.4, estimated: True}, {date: 2026-09-11, temp_max_c: 25.0, temp_min_c: 17.1, estimated: True}, {date: 2026-09-12, temp_max_c: 26.8, temp_min_c: 16.9, estimated: True}, {date: 2026-09-13, temp_max_c: 28.6, temp_min_c: 15.9, estimated: True}, {date: 2026-09-14, temp_max_c: 29.4, temp_min_c: 17.1, estimated: True}, {date: 2026-09-15, temp_max_c: 27.0, temp_min_c: 18.1, estimated: True}, {date: 2026-09-16, temp_max_c: 23.1, temp_min_c: 16.4, estimated: True}, {date: 2026-09-17, temp_max_c: 21.0, temp_min_c: 16.2, estimated: True}, {date: 2026-09-18, temp_max_c: 26.6, temp_min_c: 17.1, estimated: True}, {date: 2026-09-19, temp_max_c: 29.0, temp_min_c: 17.8, estimated: True}, {date: 2026-09-20, temp_max_c: 23.7, temp_min_c: 17.6, estimated: True}, {date: 2026-09-21, temp_max_c: 23.3, temp_min_c: 17.4, estimated: True}, {date: 2026-09-22, temp_max_c: 25.5, temp_min_c: 15.0, estimated: True}, {date: 2026-09-23, temp_max_c: 28.5, temp_min_c: 17.2, estimated: True}, {date: 2026-09-24, temp_max_c: 24.0, temp_min_c: 18.1, estimated: True}, {date: 2026-09-25, temp_max_c: 28.3, temp_min_c: 20.7, estimated: True}, {date: 2026-09-26, temp_max_c: 26.8, temp_min_c: 19.4, estimated: True}, {date: 2026-09-27, temp_max_c: 23.7, temp_min_c: 19.3, estimated: True}, {date: 2026-09-28, temp_max_c: 26.6, temp_min_c: 17.5, estimated: True}, {date: 2026-09-29, temp_max_c: 23.1, temp_min_c: 18.5, estimated: True}, {date: 2026-09-30, temp_max_c: 23.5, temp_min_c: 19.3, estimated: True}, {date: 2026-10-01, temp_max_c: 22.2, temp_min_c: 15.1, estimated: True}, {date: 2026-10-02, temp_max_c: 21.0, temp_min_c: 10.2, estimated: True}, {date: 2026-10-03, temp_max_c: 21.5, temp_min_c: 9.9, estimated: True}, {date: 2026-10-04, temp_max_c: 24.8, temp_min_c: 10.1, estimated: True}, {date: 2026-10-05, temp_max_c: 26.7, temp_min_c: 11.3, estimated: True}, {date: 2026-10-06, temp_max_c: 28.4, temp_min_c: 13.7, estimated: True}, {date: 2026-10-07, temp_max_c: 26.9, temp_min_c: 15.8, estimated: True}, {date: 2026-10-08, temp_max_c: 22.2, temp_min_c: 14.2, estimated: True}, {date: 2026-10-09, temp_max_c: 17.8, temp_min_c: 9.7, estimated: True}, {date: 2026-10-10, temp_max_c: 17.9, temp_min_c: 8.8, estimated: True}, {date: 2026-10-11, temp_max_c: 20.9, temp_min_c: 9.9, estimated: True}, {date: 2026-10-12, temp_max_c: 19.0, temp_min_c: 14.8, estimated: True}, {date: 2026-10-13, temp_max_c: 16.5, temp_min_c: 13.3, estimated: True}, {date: 2026-10-14, temp_max_c: 18.5, temp_min_c: 12.9, estimated: True}, {date: 2026-10-15, temp_max_c: 21.5, temp_min_c: 12.0, estimated: True}, {date: 2026-10-16, temp_max_c: 17.1, temp_min_c: 8.1, estimated: True}]","firstName":"Kerry","lastName":"Smith","mobilePhone":null,"secondEmail":null,"Duration":36,"title":"manager","login":"kerry.smith@gmail.com","email":"kerry.smith@gmail.com","Location":"Washington, D.C."},"credentials":{"password":{},"provider":{"type":"OKTA","name":"OKTA"}},"_links":{"suspend":{"href":"https://<your-test-okta-org>/api/v1/users/00u12ew3a2gLxdVy11d8/lifecycle/suspend","method":"POST"},"schema":{"href":"https://<your-test-okta-org>/api/v1/meta/schemas/user/osc1yzio24JjJKmvL1d7"},"resetPassword":{"href":"https://<your-test-okta-org>/api/v1/users/00u12ew3a2gLxdVy11d8/lifecycle/reset_password","method":"POST"},"forgotPassword":{"href":"https://<your-test-okta-org>/api/v1/users/00u12ew3a2gLxdVy11d8/credentials/forgot_password","method":"POST"},"expirePassword":{"href":"https://<your-test-okta-org>/api/v1/users/00u12ew3a2gLxdVy11d8/lifecycle/expire_password","method":"POST"},"changeRecoveryQuestion":{"href":"https://<your-test-okta-org>/api/v1/users/00u12ew3a2gLxdVy11d8/credentials/change_recovery_question","method":"POST"},"self":{"href":"https://<your-test-okta-org>/api/v1/users/00u12ew3a2gLxdVy11d8"},"resetFactors":{"href":"https://<your-test-okta-org>/api/v1/users/00u12ew3a2gLxdVy11d8/lifecycle/reset_factors","method":"POST"},"type":{"href":"https://<your-test-okta-org>/api/v1/meta/types/user/oty1yzio24JjJKmvL1d7"},"changePassword":{"href":"https://<your-test-okta-org>/api/v1/users/00u12ew3a2gLxdVy11d8/credentials/change_password","method":"POST"},"deactivate":{"href":"https://<your-test-okta-org>/api/v1/users/00u12ew3a2gLxdVy11d8/lifecycle/deactivate","method":"POST"}}}
+
+✅ Task execution finished. Output is stored in memory.
+
+📝 (Execution Mode) Ask about result or type 'Continue' to execute the next task:
+> c
+🔙 Continuing to the next task...
+✅ Task completed.
+
+
+⚙️ Now running task: Update Okta User with data:
+{
+  "What is the ID of the user? (If a user was just created or selected, answer with exactly '${Create Okta User.id}' or '${Find a user by first name and last name.id}'. Otherwise, provide the actual ID)**": "${Create Okta User.id}",
+  "What is the name of the attribute to update?*": "Weather_Note",
+  "What is the value to set for this attribute?*": "${Get Weather in Period.note}"
+}
+▶️ Executing: curl -sS -X POST \
+  -H "Accept: application/json" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: SSWS $OKTA_API_TOKEN" \
+  -d '{"profile": {"Weather_Note": "Weather forecast is only available 14 days ahead. Dates from 2026-08-26 to 2026-10-16 are estimated using historical data from the same period last year."}}' \
+  "$OKTA_URL/api/v1/users/00u12ew3a2gLxdVy11d8"
+
+📤 Output:
+{"id":"00u12ew3a2gLxdVy11d8","status":"ACTIVE","created":"2026-08-11T17:30:24.000Z","activated":"2026-08-11T17:30:24.000Z","statusChanged":"2026-08-11T17:30:24.000Z","lastLogin":null,"lastUpdated":"2026-08-11T17:32:59.000Z","passwordChanged":"2026-08-11T17:30:24.000Z","type":{"id":"oty1yzio24JjJKmvL1d7"},"profile":{"Weather":"[{date: 2026-08-26, temp_max_c: 26.2, temp_min_c: 16.5, estimated: True}, {date: 2026-08-27, temp_max_c: 23.9, temp_min_c: 14.9, estimated: True}, {date: 2026-08-28, temp_max_c: 25.9, temp_min_c: 14.8, estimated: True}, {date: 2026-08-29, temp_max_c: 25.8, temp_min_c: 16.8, estimated: True}, {date: 2026-08-30, temp_max_c: 24.5, temp_min_c: 13.6, estimated: True}, {date: 2026-08-31, temp_max_c: 26.3, temp_min_c: 14.4, estimated: True}, {date: 2026-09-01, temp_max_c: 25.9, temp_min_c: 15.3, estimated: True}, {date: 2026-09-02, temp_max_c: 24.6, temp_min_c: 15.3, estimated: True}, {date: 2026-09-03, temp_max_c: 28.5, temp_min_c: 15.2, estimated: True}, {date: 2026-09-04, temp_max_c: 30.8, temp_min_c: 17.7, estimated: True}, {date: 2026-09-05, temp_max_c: 32.3, temp_min_c: 17.9, estimated: True}, {date: 2026-09-06, temp_max_c: 32.3, temp_min_c: 20.7, estimated: True}, {date: 2026-09-07, temp_max_c: 24.2, temp_min_c: 16.2, estimated: True}, {date: 2026-09-08, temp_max_c: 23.3, temp_min_c: 13.4, estimated: True}, {date: 2026-09-09, temp_max_c: 24.5, temp_min_c: 13.2, estimated: True}, {date: 2026-09-10, temp_max_c: 22.7, temp_min_c: 16.4, estimated: True}, {date: 2026-09-11, temp_max_c: 25.0, temp_min_c: 17.1, estimated: True}, {date: 2026-09-12, temp_max_c: 26.8, temp_min_c: 16.9, estimated: True}, {date: 2026-09-13, temp_max_c: 28.6, temp_min_c: 15.9, estimated: True}, {date: 2026-09-14, temp_max_c: 29.4, temp_min_c: 17.1, estimated: True}, {date: 2026-09-15, temp_max_c: 27.0, temp_min_c: 18.1, estimated: True}, {date: 2026-09-16, temp_max_c: 23.1, temp_min_c: 16.4, estimated: True}, {date: 2026-09-17, temp_max_c: 21.0, temp_min_c: 16.2, estimated: True}, {date: 2026-09-18, temp_max_c: 26.6, temp_min_c: 17.1, estimated: True}, {date: 2026-09-19, temp_max_c: 29.0, temp_min_c: 17.8, estimated: True}, {date: 2026-09-20, temp_max_c: 23.7, temp_min_c: 17.6, estimated: True}, {date: 2026-09-21, temp_max_c: 23.3, temp_min_c: 17.4, estimated: True}, {date: 2026-09-22, temp_max_c: 25.5, temp_min_c: 15.0, estimated: True}, {date: 2026-09-23, temp_max_c: 28.5, temp_min_c: 17.2, estimated: True}, {date: 2026-09-24, temp_max_c: 24.0, temp_min_c: 18.1, estimated: True}, {date: 2026-09-25, temp_max_c: 28.3, temp_min_c: 20.7, estimated: True}, {date: 2026-09-26, temp_max_c: 26.8, temp_min_c: 19.4, estimated: True}, {date: 2026-09-27, temp_max_c: 23.7, temp_min_c: 19.3, estimated: True}, {date: 2026-09-28, temp_max_c: 26.6, temp_min_c: 17.5, estimated: True}, {date: 2026-09-29, temp_max_c: 23.1, temp_min_c: 18.5, estimated: True}, {date: 2026-09-30, temp_max_c: 23.5, temp_min_c: 19.3, estimated: True}, {date: 2026-10-01, temp_max_c: 22.2, temp_min_c: 15.1, estimated: True}, {date: 2026-10-02, temp_max_c: 21.0, temp_min_c: 10.2, estimated: True}, {date: 2026-10-03, temp_max_c: 21.5, temp_min_c: 9.9, estimated: True}, {date: 2026-10-04, temp_max_c: 24.8, temp_min_c: 10.1, estimated: True}, {date: 2026-10-05, temp_max_c: 26.7, temp_min_c: 11.3, estimated: True}, {date: 2026-10-06, temp_max_c: 28.4, temp_min_c: 13.7, estimated: True}, {date: 2026-10-07, temp_max_c: 26.9, temp_min_c: 15.8, estimated: True}, {date: 2026-10-08, temp_max_c: 22.2, temp_min_c: 14.2, estimated: True}, {date: 2026-10-09, temp_max_c: 17.8, temp_min_c: 9.7, estimated: True}, {date: 2026-10-10, temp_max_c: 17.9, temp_min_c: 8.8, estimated: True}, {date: 2026-10-11, temp_max_c: 20.9, temp_min_c: 9.9, estimated: True}, {date: 2026-10-12, temp_max_c: 19.0, temp_min_c: 14.8, estimated: True}, {date: 2026-10-13, temp_max_c: 16.5, temp_min_c: 13.3, estimated: True}, {date: 2026-10-14, temp_max_c: 18.5, temp_min_c: 12.9, estimated: True}, {date: 2026-10-15, temp_max_c: 21.5, temp_min_c: 12.0, estimated: True}, {date: 2026-10-16, temp_max_c: 17.1, temp_min_c: 8.1, estimated: True}]","firstName":"Kerry","lastName":"Smith","mobilePhone":null,"secondEmail":null,"Duration":36,"Weather_Note":"Weather forecast is only available 14 days ahead. Dates from 2026-08-26 to 2026-10-16 are estimated using historical data from the same period last year.","title":"manager","login":"kerry.smith@gmail.com","email":"kerry.smith@gmail.com","Location":"Washington, D.C."},"credentials":{"password":{},"provider":{"type":"OKTA","name":"OKTA"}},"_links":{"suspend":{"href":"https://<your-test-okta-org>/api/v1/users/00u12ew3a2gLxdVy11d8/lifecycle/suspend","method":"POST"},"schema":{"href":"https://<your-test-okta-org>/api/v1/meta/schemas/user/osc1yzio24JjJKmvL1d7"},"resetPassword":{"href":"https://<your-test-okta-org>/api/v1/users/00u12ew3a2gLxdVy11d8/lifecycle/reset_password","method":"POST"},"forgotPassword":{"href":"https://<your-test-okta-org>/api/v1/users/00u12ew3a2gLxdVy11d8/credentials/forgot_password","method":"POST"},"expirePassword":{"href":"https://<your-test-okta-org>/api/v1/users/00u12ew3a2gLxdVy11d8/lifecycle/expire_password","method":"POST"},"changeRecoveryQuestion":{"href":"https://<your-test-okta-org>/api/v1/users/00u12ew3a2gLxdVy11d8/credentials/change_recovery_question","method":"POST"},"self":{"href":"https://<your-test-okta-org>/api/v1/users/00u12ew3a2gLxdVy11d8"},"resetFactors":{"href":"https://<your-test-okta-org>/api/v1/users/00u12ew3a2gLxdVy11d8/lifecycle/reset_factors","method":"POST"},"type":{"href":"https://<your-test-okta-org>/api/v1/meta/types/user/oty1yzio24JjJKmvL1d7"},"changePassword":{"href":"https://<your-test-okta-org>/api/v1/users/00u12ew3a2gLxdVy11d8/credentials/change_password","method":"POST"},"deactivate":{"href":"https://<your-test-okta-org>/api/v1/users/00u12ew3a2gLxdVy11d8/lifecycle/deactivate","method":"POST"}}}
+
+✅ Task execution finished. Output is stored in memory.
+
+📝 (Execution Mode) Ask about result or type 'Continue' to execute the next task:
+> c
+🔙 Continuing to the next task...
+✅ Task completed.
+
+
+⚙️ Now running task: Select Group By Name with data:
+{
+  "What is the name of the Okta group to search for?*": "managers"
+}
+▶️ Executing: curl -sS -X GET \
+  -H "Accept: application/json" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: SSWS $OKTA_API_TOKEN" \
+  "$OKTA_URL/api/v1/groups?q=managers" | python -c 'import sys, json; text=sys.stdin.read(); exec("try:\n data=json.loads(text)\n print(json.dumps({\"id\": data[0][\"id\"]} if isinstance(data, list) and data else {\"error\": \"Not found\"}))\nexcept: print(json.dumps({\"error\": \"Invalid response\"}))")'
+
+📤 Output:
+{"id": "00g12ccs5q1cAqi4m1d8"}
+
+✅ Task execution finished. Output is stored in memory.
+
+📝 (Execution Mode) Ask about result or type 'Continue' to execute the next task:
+> c
+🔙 Continuing to the next task...
+✅ Task completed.
+
+
+⚙️ Now running task: Assign User to Group with data:
+{
+  "What is the ID of the Okta group? (If a group was just created or selected, answer with exactly '${Create Okta Group.id}' or '${Select Group By Name.id}'. Otherwise, provide the actual ID)*": "${Select Group By Name.id}",
+  "What is the email or ID of the user to assign? (If a user was just created, answer with exactly '${Create Okta User.id}'. Otherwise, provide the email or ID)*": "${Create Okta User.id}"
+}
+▶️ Executing: curl -sS -X PUT \
+  -H "Accept: application/json" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: SSWS $OKTA_API_TOKEN" \
+  "$OKTA_URL/api/v1/groups/00g12ccs5q1cAqi4m1d8/users/00u12ew3a2gLxdVy11d8"
+
+📤 Output:
+[No Output]
+
+✅ Task execution finished. Output is stored in memory.
+
+📝 (Execution Mode) Ask about result or type 'Continue' to execute the next task:
+> c
+🔙 Continuing to the next task...
+✅ Task completed.
+
+
+⚙️ Now running task: Select Group By Name with data:
+{
+  "What is the name of the Okta group to search for?*": "Smith_Family"
+}
+▶️ Executing: curl -sS -X GET \
+  -H "Accept: application/json" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: SSWS $OKTA_API_TOKEN" \
+  "$OKTA_URL/api/v1/groups?q=Smith_Family" | python -c 'import sys, json; text=sys.stdin.read(); exec("try:\n data=json.loads(text)\n print(json.dumps({\"id\": data[0][\"id\"]} if isinstance(data, list) and data else {\"error\": \"Not found\"}))\nexcept: print(json.dumps({\"error\": \"Invalid response\"}))")'
+
+📤 Output:
+{"id": "00g11qhclutcirUXR1d8"}
+
+✅ Task execution finished. Output is stored in memory.
+
+📝 (Execution Mode) Ask about result or type 'Continue' to execute the next task:
+> c
+🔙 Continuing to the next task...
+✅ Task completed.
+
+
+⚙️ Now running task: Assign User to Group with data:
+{
+  "What is the ID of the Okta group? (If a group was just created or selected, answer with exactly '${Create Okta Group.id}' or '${Select Group By Name.id}'. Otherwise, provide the actual ID)*": "${Select Group By Name.id}",
+  "What is the email or ID of the user to assign? (If a user was just created, answer with exactly '${Create Okta User.id}'. Otherwise, provide the email or ID)*": "${Create Okta User.id}"
+}
+▶️ Executing: curl -sS -X PUT \
+  -H "Accept: application/json" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: SSWS $OKTA_API_TOKEN" \
+  "$OKTA_URL/api/v1/groups/00g11qhclutcirUXR1d8/users/00u12ew3a2gLxdVy11d8"
+
+📤 Output:
+[No Output]
+
+✅ Task execution finished. Output is stored in memory.
+
+📝 (Execution Mode) Ask about result or type 'Continue' to execute the next task:
+> c
+🔙 Continuing to the next task...
+✅ Task completed.
+
+
+⚙️ Now running task: Select Group By Name with data:
+{
+  "What is the name of the Okta group to search for?*": "Smiths"
+}
+▶️ Executing: curl -sS -X GET \
+  -H "Accept: application/json" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: SSWS $OKTA_API_TOKEN" \
+  "$OKTA_URL/api/v1/groups?q=Smiths" | python -c 'import sys, json; text=sys.stdin.read(); exec("try:\n data=json.loads(text)\n print(json.dumps({\"id\": data[0][\"id\"]} if isinstance(data, list) and data else {\"error\": \"Not found\"}))\nexcept: print(json.dumps({\"error\": \"Invalid response\"}))")'
+
+📤 Output:
+{"id": "00g11q5s87lsGtSyH1d8"}
+
+✅ Task execution finished. Output is stored in memory.
+
+📝 (Execution Mode) Ask about result or type 'Continue' to execute the next task:
+> c
+🔙 Continuing to the next task...
+✅ Task completed.
+
+
+⚙️ Now running task: Assign User to Group with data:
+{
+  "What is the ID of the Okta group? (If a group was just created or selected, answer with exactly '${Create Okta Group.id}' or '${Select Group By Name.id}'. Otherwise, provide the actual ID)*": "${Select Group By Name.id}",
+  "What is the email or ID of the user to assign? (If a user was just created, answer with exactly '${Create Okta User.id}'. Otherwise, provide the email or ID)*": "${Create Okta User.id}"
+}
+▶️ Executing: curl -sS -X PUT \
+  -H "Accept: application/json" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: SSWS $OKTA_API_TOKEN" \
+  "$OKTA_URL/api/v1/groups/00g11q5s87lsGtSyH1d8/users/00u12ew3a2gLxdVy11d8"
+
+📤 Output:
+[No Output]
+
+✅ Task execution finished. Output is stored in memory.
+
+📝 (Execution Mode) Ask about result or type 'Continue' to execute the next task:
+> c
+🔙 Continuing to the next task...
+✅ Task completed.
+
+
+⚙️ Now running task: Select Group By Name with data:
+{
+  "What is the name of the Okta group to search for?*": "zone_one"
+}
+▶️ Executing: curl -sS -X GET \
+  -H "Accept: application/json" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: SSWS $OKTA_API_TOKEN" \
+  "$OKTA_URL/api/v1/groups?q=zone_one" | python -c 'import sys, json; text=sys.stdin.read(); exec("try:\n data=json.loads(text)\n print(json.dumps({\"id\": data[0][\"id\"]} if isinstance(data, list) and data else {\"error\": \"Not found\"}))\nexcept: print(json.dumps({\"error\": \"Invalid response\"}))")'
+
+📤 Output:
+{"id": "00g11mz26z0Vqkjaf1d8"}
+
+✅ Task execution finished. Output is stored in memory.
+
+📝 (Execution Mode) Ask about result or type 'Continue' to execute the next task:
+> c
+🔙 Continuing to the next task...
+✅ Task completed.
+
+
+⚙️ Now running task: Assign User to Group with data:
+{
+  "What is the ID of the Okta group? (If a group was just created or selected, answer with exactly '${Create Okta Group.id}' or '${Select Group By Name.id}'. Otherwise, provide the actual ID)*": "${Select Group By Name.id}",
+  "What is the email or ID of the user to assign? (If a user was just created, answer with exactly '${Create Okta User.id}'. Otherwise, provide the email or ID)*": "${Create Okta User.id}"
+}
+▶️ Executing: curl -sS -X PUT \
+  -H "Accept: application/json" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: SSWS $OKTA_API_TOKEN" \
+  "$OKTA_URL/api/v1/groups/00g11mz26z0Vqkjaf1d8/users/00u12ew3a2gLxdVy11d8"
+
+📤 Output:
+[No Output]
+
+✅ Task execution finished. Output is stored in memory.
+
+📝 (Execution Mode) Ask about result or type 'Continue' to execute the next task:
+> c
+🔙 Continuing to the next task...
+✅ Task completed.
+
+
+⚙️ Now running task: Select Group By Name with data:
+{
+  "What is the name of the Okta group to search for?*": "zone_two"
+}
+▶️ Executing: curl -sS -X GET \
+  -H "Accept: application/json" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: SSWS $OKTA_API_TOKEN" \
+  "$OKTA_URL/api/v1/groups?q=zone_two" | python -c 'import sys, json; text=sys.stdin.read(); exec("try:\n data=json.loads(text)\n print(json.dumps({\"id\": data[0][\"id\"]} if isinstance(data, list) and data else {\"error\": \"Not found\"}))\nexcept: print(json.dumps({\"error\": \"Invalid response\"}))")'
+
+📤 Output:
+{"id": "00g11mzkm99rMgUDN1d8"}
+
+✅ Task execution finished. Output is stored in memory.
+
+📝 (Execution Mode) Ask about result or type 'Continue' to execute the next task:
+> c
+🔙 Continuing to the next task...
+✅ Task completed.
+
+
+⚙️ Now running task: Assign User to Group with data:
+{
+  "What is the ID of the Okta group? (If a group was just created or selected, answer with exactly '${Create Okta Group.id}' or '${Select Group By Name.id}'. Otherwise, provide the actual ID)*": "${Select Group By Name.id}",
+  "What is the email or ID of the user to assign? (If a user was just created, answer with exactly '${Create Okta User.id}'. Otherwise, provide the email or ID)*": "${Create Okta User.id}"
+}
+▶️ Executing: curl -sS -X PUT \
+  -H "Accept: application/json" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: SSWS $OKTA_API_TOKEN" \
+  "$OKTA_URL/api/v1/groups/00g11mzkm99rMgUDN1d8/users/00u12ew3a2gLxdVy11d8"
+
+📤 Output:
+[No Output]
+
+✅ Task execution finished. Output is stored in memory.
+
+📝 (Execution Mode) Ask about result or type 'Continue' to execute the next task:
+> c
+🔙 Continuing to the next task...
+✅ Task completed.
+
+
+⚙️ Now running task: Select Group By Name with data:
+{
+  "What is the name of the Okta group to search for?*": "zone_four"
+}
+▶️ Executing: curl -sS -X GET \
+  -H "Accept: application/json" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: SSWS $OKTA_API_TOKEN" \
+  "$OKTA_URL/api/v1/groups?q=zone_four" | python -c 'import sys, json; text=sys.stdin.read(); exec("try:\n data=json.loads(text)\n print(json.dumps({\"id\": data[0][\"id\"]} if isinstance(data, list) and data else {\"error\": \"Not found\"}))\nexcept: print(json.dumps({\"error\": \"Invalid response\"}))")'
+
+📤 Output:
+{"id": "00g11mzyolaDyCFH71d8"}
+
+✅ Task execution finished. Output is stored in memory.
+
+📝 (Execution Mode) Ask about result or type 'Continue' to execute the next task:
+> c
+🔙 Continuing to the next task...
+✅ Task completed.
+
+
+⚙️ Now running task: Assign User to Group with data:
+{
+  "What is the ID of the Okta group? (If a group was just created or selected, answer with exactly '${Create Okta Group.id}' or '${Select Group By Name.id}'. Otherwise, provide the actual ID)*": "${Select Group By Name.id}",
+  "What is the email or ID of the user to assign? (If a user was just created, answer with exactly '${Create Okta User.id}'. Otherwise, provide the email or ID)*": "${Create Okta User.id}"
+}
+▶️ Executing: curl -sS -X PUT \
+  -H "Accept: application/json" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: SSWS $OKTA_API_TOKEN" \
+  "$OKTA_URL/api/v1/groups/00g11mzyolaDyCFH71d8/users/00u12ew3a2gLxdVy11d8"
+
+📤 Output:
+[No Output]
+
+✅ Task execution finished. Output is stored in memory.
+
+📝 (Execution Mode) Ask about result or type 'Continue' to execute the next task:
+> c
+🔙 Continuing to the next task...
+✅ Task completed.
+
+
+⚙️ Now running task: Select Group By Name with data:
+{
+  "What is the name of the Okta group to search for?*": "zone_five"
+}
+▶️ Executing: curl -sS -X GET \
+  -H "Accept: application/json" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: SSWS $OKTA_API_TOKEN" \
+  "$OKTA_URL/api/v1/groups?q=zone_five" | python -c 'import sys, json; text=sys.stdin.read(); exec("try:\n data=json.loads(text)\n print(json.dumps({\"id\": data[0][\"id\"]} if isinstance(data, list) and data else {\"error\": \"Not found\"}))\nexcept: print(json.dumps({\"error\": \"Invalid response\"}))")'
+
+📤 Output:
+{"id": "00g11oe6vhsSQAuNu1d8"}
+
+✅ Task execution finished. Output is stored in memory.
+
+📝 (Execution Mode) Ask about result or type 'Continue' to execute the next task:
+> c
+🔙 Continuing to the next task...
+✅ Task completed.
+
+
+⚙️ Now running task: Assign User to Group with data:
+{
+  "What is the ID of the Okta group? (If a group was just created or selected, answer with exactly '${Create Okta Group.id}' or '${Select Group By Name.id}'. Otherwise, provide the actual ID)*": "${Select Group By Name.id}",
+  "What is the email or ID of the user to assign? (If a user was just created, answer with exactly '${Create Okta User.id}'. Otherwise, provide the email or ID)*": "${Create Okta User.id}"
+}
+▶️ Executing: curl -sS -X PUT \
+  -H "Accept: application/json" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: SSWS $OKTA_API_TOKEN" \
+  "$OKTA_URL/api/v1/groups/00g11oe6vhsSQAuNu1d8/users/00u12ew3a2gLxdVy11d8"
+
+📤 Output:
+[No Output]
+
+✅ Task execution finished. Output is stored in memory.
+
+📝 (Execution Mode) Ask about result or type 'Continue' to execute the next task:
+> c
+🔙 Continuing to the next task...
+✅ Task completed.
+
+
+📝 🧠 What do you want to do? (type 'exit' to quit, 'run' to execute one task with a pause, or 'automate' to execute all tasks without pauses)
+> exit
+
+📦 Final JSON: (Executing 25)
+[
+  {
+    "task": "Get Future Date",
+    "data": {
+      "What is the timeframe/period (next week or next month)?*": "next month",
+      "What is the duration of the trip (number of days)?*": "36"
+    }
+  },
+  {
+    "task": "Get Weather in Period",
+    "data": {
+      "What is the location (city name)?*": "Washington, D.C.",
+      "What is the start date (YYYY-MM-DD)? (If a date was calculated, answer with exactly '${Get Future Date.start_date}'. Otherwise, provide the date)*": "${Get Future Date.start_date}",
+      "What is the end date (YYYY-MM-DD)? (If a date was calculated, answer with exactly '${Get Future Date.end_date}'. Otherwise, provide the date)*": "${Get Future Date.end_date}"
+    }
+  },
+  {
+    "task": "Create Okta User",
+    "data": {
+      "What is the new okta user's first name?*": "Kerry",
+      "What is the new okta user's last name?*": "Smith",
+      "What is the new okta user's email?*": "kerry.smith@gmail.com",
+      "What is the user's job title?": "manager",
+      "What's the user's username?*": "kerry.smith@gmail.com"
+    }
+  },
+  {
+    "task": "Add Okta Attribute",
+    "data": {
+      "What is the name of the new Okta attribute?*": "Location",
+      "What is the title/label of the new Okta attribute?": "Location",
+      "What is the type of the new Okta attribute? (string/number/boolean)": "string"
+    }
+  },
+  {
+    "task": "Add Okta Attribute",
+    "data": {
+      "What is the name of the new Okta attribute?*": "Duration",
+      "What is the title/label of the new Okta attribute?": "Duration",
+      "What is the type of the new Okta attribute? (string/number/boolean)": "number"
+    }
+  },
+  {
+    "task": "Add Okta Attribute",
+    "data": {
+      "What is the name of the new Okta attribute?*": "Weather",
+      "What is the title/label of the new Okta attribute?": "Weather",
+      "What is the type of the new Okta attribute? (string/number/boolean)": "string"
+    }
+  },
+  {
+    "task": "Add Okta Attribute",
+    "data": {
+      "What is the name of the new Okta attribute?*": "Weather_Note",
+      "What is the title/label of the new Okta attribute?": "Weather Note",
+      "What is the type of the new Okta attribute? (string/number/boolean)": "string"
+    }
+  },
+  {
+    "task": "Update Okta User",
+    "data": {
+      "What is the ID of the user? (If a user was just created or selected, answer with exactly '${Create Okta User.id}' or '${Find a user by first name and last name.id}'. Otherwise, provide the actual ID)**": "${Create Okta User.id}",
+      "What is the name of the attribute to update?*": "Location",
+      "What is the value to set for this attribute?*": "Washington, D.C."
+    }
+  },
+  {
+    "task": "Update Okta User",
+    "data": {
+      "What is the ID of the user? (If a user was just created or selected, answer with exactly '${Create Okta User.id}' or '${Find a user by first name and last name.id}'. Otherwise, provide the actual ID)**": "${Create Okta User.id}",
+      "What is the name of the attribute to update?*": "Duration",
+      "What is the value to set for this attribute?*": "36"
+    }
+  },
+  {
+    "task": "Update Okta User",
+    "data": {
+      "What is the ID of the user? (If a user was just created or selected, answer with exactly '${Create Okta User.id}' or '${Find a user by first name and last name.id}'. Otherwise, provide the actual ID)**": "${Create Okta User.id}",
+      "What is the name of the attribute to update?*": "Weather",
+      "What is the value to set for this attribute?*": "${Get Weather in Period.weather}"
+    }
+  },
+  {
+    "task": "Update Okta User",
+    "data": {
+      "What is the ID of the user? (If a user was just created or selected, answer with exactly '${Create Okta User.id}' or '${Find a user by first name and last name.id}'. Otherwise, provide the actual ID)**": "${Create Okta User.id}",
+      "What is the name of the attribute to update?*": "Weather_Note",
+      "What is the value to set for this attribute?*": "${Get Weather in Period.note}"
+    }
+  },
+  {
+    "task": "Select Group By Name",
+    "data": {
+      "What is the name of the Okta group to search for?*": "managers"
+    }
+  },
+  {
+    "task": "Assign User to Group",
+    "data": {
+      "What is the ID of the Okta group? (If a group was just created or selected, answer with exactly '${Create Okta Group.id}' or '${Select Group By Name.id}'. Otherwise, provide the actual ID)*": "${Select Group By Name.id}",
+      "What is the email or ID of the user to assign? (If a user was just created, answer with exactly '${Create Okta User.id}'. Otherwise, provide the email or ID)*": "${Create Okta User.id}"
+    }
+  },
+  {
+    "task": "Select Group By Name",
+    "data": {
+      "What is the name of the Okta group to search for?*": "Smith_Family"
+    }
+  },
+  {
+    "task": "Assign User to Group",
+    "data": {
+      "What is the ID of the Okta group? (If a group was just created or selected, answer with exactly '${Create Okta Group.id}' or '${Select Group By Name.id}'. Otherwise, provide the actual ID)*": "${Select Group By Name.id}",
+      "What is the email or ID of the user to assign? (If a user was just created, answer with exactly '${Create Okta User.id}'. Otherwise, provide the email or ID)*": "${Create Okta User.id}"
+    }
+  },
+  {
+    "task": "Select Group By Name",
+    "data": {
+      "What is the name of the Okta group to search for?*": "Smiths"
+    }
+  },
+  {
+    "task": "Assign User to Group",
+    "data": {
+      "What is the ID of the Okta group? (If a group was just created or selected, answer with exactly '${Create Okta Group.id}' or '${Select Group By Name.id}'. Otherwise, provide the actual ID)*": "${Select Group By Name.id}",
+      "What is the email or ID of the user to assign? (If a user was just created, answer with exactly '${Create Okta User.id}'. Otherwise, provide the email or ID)*": "${Create Okta User.id}"
+    }
+  },
+  {
+    "task": "Select Group By Name",
+    "data": {
+      "What is the name of the Okta group to search for?*": "zone_one"
+    }
+  },
+  {
+    "task": "Assign User to Group",
+    "data": {
+      "What is the ID of the Okta group? (If a group was just created or selected, answer with exactly '${Create Okta Group.id}' or '${Select Group By Name.id}'. Otherwise, provide the actual ID)*": "${Select Group By Name.id}",
+      "What is the email or ID of the user to assign? (If a user was just created, answer with exactly '${Create Okta User.id}'. Otherwise, provide the email or ID)*": "${Create Okta User.id}"
+    }
+  },
+  {
+    "task": "Select Group By Name",
+    "data": {
+      "What is the name of the Okta group to search for?*": "zone_two"
+    }
+  },
+  {
+    "task": "Assign User to Group",
+    "data": {
+      "What is the ID of the Okta group? (If a group was just created or selected, answer with exactly '${Create Okta Group.id}' or '${Select Group By Name.id}'. Otherwise, provide the actual ID)*": "${Select Group By Name.id}",
+      "What is the email or ID of the user to assign? (If a user was just created, answer with exactly '${Create Okta User.id}'. Otherwise, provide the email or ID)*": "${Create Okta User.id}"
+    }
+  },
+  {
+    "task": "Select Group By Name",
+    "data": {
+      "What is the name of the Okta group to search for?*": "zone_four"
+    }
+  },
+  {
+    "task": "Assign User to Group",
+    "data": {
+      "What is the ID of the Okta group? (If a group was just created or selected, answer with exactly '${Create Okta Group.id}' or '${Select Group By Name.id}'. Otherwise, provide the actual ID)*": "${Select Group By Name.id}",
+      "What is the email or ID of the user to assign? (If a user was just created, answer with exactly '${Create Okta User.id}'. Otherwise, provide the email or ID)*": "${Create Okta User.id}"
+    }
+  },
+  {
+    "task": "Select Group By Name",
+    "data": {
+      "What is the name of the Okta group to search for?*": "zone_five"
+    }
+  },
+  {
+    "task": "Assign User to Group",
+    "data": {
+      "What is the ID of the Okta group? (If a group was just created or selected, answer with exactly '${Create Okta Group.id}' or '${Select Group By Name.id}'. Otherwise, provide the actual ID)*": "${Select Group By Name.id}",
+      "What is the email or ID of the user to assign? (If a user was just created, answer with exactly '${Create Okta User.id}'. Otherwise, provide the email or ID)*": "${Create Okta User.id}"
     }
   }
 ]

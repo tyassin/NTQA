@@ -66,6 +66,9 @@ class TaskManager:
             "- Ask only one unanswered required question at a time across all identified tasks.\n"
             "- Don't ask non-required questions, unless the user provides the question and its answer.\n"
             "- If a task's question can be answered using a reference to another identified task's output (e.g., '${Get Future Date.start_date}', '${Get Future Date.end_date}', or '${Select Group By Name.id}'), automatically fill in that reference as the answer instead of asking the user.\n"
+            "- If the user prompt specifies an attribute name such as ('weather') or ('note'), that attribute is the exact name in a reference task's output (e.g., '${Get Weather in Period.weather}', '${Get Weather in Period.note}', or '${Select Group By Name.id}'), automatically fill in that reference as the answer instead of asking the user.\n"
+            "- find the group then directly assign the user to the group. don't do 2 lookups for the group. just do one lookup and get the group id and then assign the user to the group.\n"
+            "- If tasks are repeated is such a way find or selct and then create or update or assing, run the select/find task first and then the create/update/assign task after the select/find task since the data is related and IDs maybe overwritten in the memory due to the previous task's output.(e.g. find user and then update user, or find group and then add or assign user to group)\n"
             "- If all required questions for all identified tasks are answered, return a JSON list of completed tasks:\n"
             "  [\n"
             "    {\n"
@@ -93,8 +96,61 @@ class TaskManager:
             base += f"\n\nTask: {t['task_name']}\nDescription: {t['description']}\nQuestions: {json.dumps(t['questions'])}\nOutput Schema: {json.dumps(t['output_schema'])}"
         return base
 
-def ask_user(prompt_text):
+def ask_user_single_line(prompt_text):
     return input(f"\n📝 {prompt_text}\n> ").strip()
+
+def ask_user_multi_lines(prompt_text):
+    print(f"\n📝 {prompt_text}")
+    print("   (type your message across multiple lines — press Enter on a blank line to submit)")
+    lines = []
+    while True:
+        try:
+            line = input()
+        except EOFError:
+            break
+        if line == "" and lines:
+            # blank line submits
+            break
+        lines.append(line)
+    text = "\n".join(lines).strip()
+    if text:
+        readline.add_history(text)
+    return text
+
+
+def correct_spelling(text):
+    """Fix spelling/grammar in user input silently before evaluation."""
+    try:
+        fix_prompt = (
+            "Fix any spelling mistakes, typos, and grammar errors in the following text. "
+            "Keep the original meaning, names, and intent exactly as-is. "
+            "Return only the corrected text with no explanation:\n\n" + text
+        )
+        result = client.models.generate_content(model=args.model, contents=fix_prompt)
+        corrected = result.text.strip()
+        if corrected and corrected != text:
+            print(f"✏️  (spell-corrected) {corrected}")
+        return corrected if corrected else text
+    except Exception:
+        return text
+
+
+def check_completed(parsed, tm):
+    """Return (is_complete, normalized_list_or_None)."""
+    if not parsed:
+        return False, None
+    if isinstance(parsed, dict):
+        parsed = [parsed]
+    if isinstance(parsed, list):
+        for t_parsed in parsed:
+            t_name = t_parsed.get("task")
+            t_data = t_parsed.get("data", {})
+            task = tm.get_task_by_name(t_name) if t_name else None
+            if not task or not is_complete(tm.get_required_keys(task), t_data):
+                return False, parsed
+        return True, parsed
+    return False, None
+
 
 def merge_answers(existing, new_data):
     for k, v in new_data.items():
@@ -133,7 +189,7 @@ def try_parse_json(text):
     return None
 
 
-def execute_task(task_name, data, tm=None, context=None):
+def execute_task(task_name, data, tm=None, context=None, pause=True):
     if context is None:
         context = {}
         
@@ -222,24 +278,32 @@ def execute_task(task_name, data, tm=None, context=None):
             print("🤖", reply.text.strip())
             print("")
         else:
-            # Loop for user interaction in execution mode
-            while True:
-                follow_up = ask_user("(Execution Mode) Ask about result or type 'Continue' to execute the next task:")
-                if follow_up.lower() in ['continue', 'c']:
-                    print("🔙 Continuing to the next task...")
-                    break
+            if pause:
+                # Loop for user interaction in execution mode
+                while True:
+                    follow_up = ask_user_single_line("(Execution Mode) Ask about result or type 'Continue' to execute the next task:")
+                    if follow_up.lower() in ['continue', 'c']:
+                        print("🔙 Continuing to the next task...")
+                        break
 
-                if not output_sent:
-                    print("💬 Sending output to Gemini for analysis...")
-                    summary_prompt = f"The output of the command `{command}` was:\n\n{output or '[No output]'}"
-                    if error:
-                        summary_prompt += f"\n\nThere were also errors:\n{error}"
-                    summary_prompt += f"\n\nUser Question: {follow_up}"
-                    reply = execution_convo.send_message(summary_prompt)
-                    output_sent = True
-                else:
-                    reply = execution_convo.send_message(follow_up)
+                    if not output_sent:
+                        print("💬 Sending output to Gemini for analysis...")
+                        summary_prompt = f"The output of the command `{command}` was:\n\n{output or '[No output]'}"
+                        if error:
+                            summary_prompt += f"\n\nThere were also errors:\n{error}"
+                        summary_prompt += f"\n\nUser Question: {follow_up}"
+                        reply = execution_convo.send_message(summary_prompt)
+                        output_sent = True
+                    else:
+                        reply = execution_convo.send_message(follow_up)
 
+                    print("🤖", reply.text.strip())
+            else:
+                print("🤖 Auto-summarizing the result of task: " + task_name)
+                summary_prompt = f"The output of the command `{command}` was:\n\n{output or '[No output]'}"
+                if error:
+                    summary_prompt += f"\n\nThere were also errors:\n{error}"
+                reply = execution_convo.send_message(summary_prompt)
                 print("🤖", reply.text.strip())
     except FileNotFoundError:
         print(f"❌ Command not found: {command}")
@@ -258,11 +322,11 @@ def main():
     while True:
         convo = client.chats.create(model=args.model, history=[{"role": "user", "parts": [{"text": system_prompt}]}])
         if last_tasks:
-            sys_prompt = "🧠 What do you want to do? (type 'exit' to quit, or 'run'/'automate' to execute the last task(s))"
+            sys_prompt = "🧠 What do you want to do? (type 'exit' to quit, 'run' to execute one task with a pause, or 'automate' to execute all tasks without pauses)"
+            user_input = ask_user_single_line(sys_prompt)
         else:
             sys_prompt = "🧠 What do you want to do? (type 'exit' to quit)"
-        
-        user_input = ask_user(sys_prompt)
+            user_input = ask_user_multi_lines(sys_prompt)
         #if not last_tasks:
         #    user_input += ". All required questions are answered in this prompt."
         if user_input.lower() in ['exit', 'quit', 'bye']:
@@ -270,101 +334,86 @@ def main():
             break
         #print("user_input we'll be using is: " + user_input)
         if user_input.lower() in ['run', 'automate']:
+            if user_input.lower() == 'automate':
+                pause = False
+            else:
+                pause = True
+            print("pause is: " + str(pause))
             if last_tasks:
                 print(f"⚠️ Running {len(last_tasks)} task(s) in sequence...")
                 execution_context = {}
                 for task_info in last_tasks:
-                    execute_task(task_info.get("task"), task_info.get("data", {}), tm, execution_context)
+                    execute_task(task_info.get("task"), task_info.get("data", {}), tm, execution_context, pause)
             else:
                 print("⚠️ No previous task found to run.")
             continue
 
-        response = convo.send_message(user_input)
+        # --- Step 1: fix spelling silently ---
+        corrected_input = correct_spelling(user_input)
 
-        # if hasattr(response, "usage_metadata"):
-        #     print("🔍 Token usage:", response.usage_metadata)
-        # else:
-        #     def estimate_token_count(text): return int(len(text.split()) * 1.3)
-        #     print(f"🔍 Estimated token usage: ~{estimate_token_count(user_input)} tokens")
-
-        parsed = try_parse_json(response.text)
-        
-        # Check if complete
+        # --- Step 2: auto-retry up to 3 times before asking the user ---
+        MAX_AUTO_RETRIES = 3
         is_completed_flow = False
-        if parsed:
-            if isinstance(parsed, list):
-                all_complete = True
-                for t_parsed in parsed:
-                    t_name = t_parsed.get("task")
-                    t_data = t_parsed.get("data", {})
-                    task = tm.get_task_by_name(t_name) if t_name else None
-                    if not task or not is_complete(tm.get_required_keys(task), t_data):
-                        all_complete = False
-                        break
-                if all_complete:
-                    last_tasks = parsed
-                    is_completed_flow = True
-            elif isinstance(parsed, dict):
-                t_name = parsed.get("task")
-                t_data = parsed.get("data", {})
-                task = tm.get_task_by_name(t_name) if t_name else None
-                if task and is_complete(tm.get_required_keys(task), t_data):
-                    last_tasks = [parsed]
-                    is_completed_flow = True
+        parsed = None
+        response = None
 
+        for attempt in range(1, MAX_AUTO_RETRIES + 1):
+            if attempt == 1:
+                send_text = corrected_input
+            else:
+                # On retries, remind the LLM to look harder in the original prompt
+                send_text = (
+                    f"(Retry {attempt}/{MAX_AUTO_RETRIES}) "
+                    "Please re-read the original prompt carefully and try again to extract ALL required answers from it. "
+                    "Do not ask the user anything yet — all answers should be in the conversation so far."
+                )
+            response = convo.send_message(send_text)
+            parsed = try_parse_json(response.text)
+            done, normalized = check_completed(parsed, tm)
+            if done:
+                last_tasks = normalized
+                is_completed_flow = True
+                break
+            if attempt < MAX_AUTO_RETRIES:
+                print(f"🔄 Auto-retry {attempt}/{MAX_AUTO_RETRIES} — still extracting answers from your prompt...")
+
+        # Show LLM response if still incomplete after all retries
         if not is_completed_flow:
             if not parsed:
                 print(response.text)
             else:
                 print(json.dumps(parsed, indent=2))
 
+        # --- Step 3: interactive Q&A (only once auto-retries are exhausted) ---
         while not is_completed_flow:
-            user_input = ask_user("Your answer (or type exit):")
+            user_input = ask_user_single_line("Your answer (or type exit):")
             if user_input.lower() in ['exit', 'quit', 'bye']:
                 print_final(last_tasks)
                 return
 
             if user_input.lower() in ['run', 'automate']:
+                if user_input.lower() == 'automate':
+                    pause = False
+                else:
+                    pause = True
                 if last_tasks:
                     print(f"⚠️ Running {len(last_tasks)} task(s) in sequence...")
                     execution_context = {}
                     for task_info in last_tasks:
-                        execute_task(task_info.get("task"), task_info.get("data", {}), tm, execution_context)
+                        execute_task(task_info.get("task"), task_info.get("data", {}), tm, execution_context, pause)
                 else:
                     print("⚠️ No previous task found to run.")
                 continue
 
-            response = convo.send_message(user_input)
-
-            # if hasattr(response, "usage_metadata"):
-            #     print("🔍 Token usage:", response.usage_metadata)
-            # else:
-            #     def estimate_token_count(text): return int(len(text.split()) * 1.3)
-            #     print(f"🔍 Estimated token usage: ~{estimate_token_count(user_input)} tokens")
-
+            # Fix spelling in follow-up answers too
+            corrected_answer = correct_spelling(user_input)
+            response = convo.send_message(corrected_answer)
             parsed = try_parse_json(response.text)
-            if parsed:
-                if isinstance(parsed, list):
-                    all_complete = True
-                    for t_parsed in parsed:
-                        t_name = t_parsed.get("task")
-                        t_data = t_parsed.get("data", {})
-                        task = tm.get_task_by_name(t_name) if t_name else None
-                        if not task or not is_complete(tm.get_required_keys(task), t_data):
-                            all_complete = False
-                            break
-                    if all_complete:
-                        last_tasks = parsed
-                        is_completed_flow = True
-                elif isinstance(parsed, dict):
-                    t_name = parsed.get("task")
-                    t_data = parsed.get("data", {})
-                    task = tm.get_task_by_name(t_name) if t_name else None
-                    if task and is_complete(tm.get_required_keys(task), t_data):
-                        last_tasks = [parsed]
-                        is_completed_flow = True
-
-            if not is_completed_flow:
+            done, normalized = check_completed(parsed, tm)
+            if done:
+                last_tasks = normalized
+                is_completed_flow = True
+            else:
                 if not parsed:
                     print(response.text)
                 else:
