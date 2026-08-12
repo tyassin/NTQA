@@ -219,7 +219,7 @@ You may also type 'automate' or 'run' to execute the completed task.
 
 NTQA shines when chaining multiple tasks together. Try copying and pasting the following prompt into the assistant to see it orchestrate multiple actions automatically:
 
-> "Amanda Smith is traveling to Washington DC next week for 5 days. She wants to be informed about the weather during her stay. 
+> "Amanda Smith" is traveling to Washington DC next week for 5 days. She wants to be informed about the weather during her stay. 
 > Create a new okta user using her first dot last names at gmail as username and email. 
 > Then create or update 4 new attributes one called location 'Location', title 'Location'. 
 > The 2nd attribute is called 'Duration', title 'Duration' and set duration in days. 
@@ -227,7 +227,7 @@ NTQA shines when chaining multiple tasks together. Try copying and pasting the f
 > The 4th attribute is called 'Weather_Note', title 'Weather Note', updated it with ('note') from the weather api response.
 > Update the user with the new attribute values.
 > The new user is manager and needs to be added to the managers group. 
-> She also needs to be assigned to the following groups 'Smith_Family', 'Smiths', 'zone_one', 'zone_two', 'zone_four', and 'zone_five'"
+> She also needs to be assigned to the following groups 'Smith_Family', 'Smiths', 'zone_one', 'zone_two', 'zone_four', and 'zone_five'.
 
 **What to expect:**
 1. The assistant will parse this complex narrative and identify all the necessary tasks (getting future dates, fetching weather, creating an Okta user, adding attributes, updating the user, and assigning groups).
@@ -237,25 +237,218 @@ NTQA shines when chaining multiple tasks together. Try copying and pasting the f
 
 **Sample Output:**
 ```bash
-📦 Final JSON: (Executing 14)
+python task_run.py
+🤖 Gemini Task Assistant Initialized using model: gemini-3.1-flash-lite
+
+📝 🧠 What do you want to do? (type 'exit' to quit)
+   (type your message across multiple lines — press Enter on a blank line to submit)
+"Amanda Smith" is traveling to Washington DC next month for a 5 day trip. She wants to be informed about the weather during her stay. 
+Create a new okta user using her first dot last names at gmail as username and email. 
+Then create or update 4 new attributes one called location "Location", title "Location". 
+The 2nd attribute is called "Duration", title "Duration" and set duration in days. 
+The 3rd attribute is called "Weather", title "Weather", updated with the ('weather') from weather api response. 
+The 4th attribute is called "Weather_Note", title "Weather Note", updated it with ('note') from the weather api response.
+Update the user with the new attribute values.
+The new user is manager and needs to be added to the managers group. 
+She also needs to be assigned to the following groups "Smith_Family", "Smiths", "zone_one", "zone_two", "zone_four", and "zone_five"
+
+✏️  (spell-corrected) "Amanda Smith" is traveling to Washington, D.C. next month for a 5-day trip. She wants to be informed about the weather during her stay. 
+Create a new Okta user using her first dot last name at gmail as the username and email. 
+Then, create or update 4 new attributes: one called "Location" (title "Location"), the 2nd attribute called "Duration" (title "Duration") set to the duration in days, the 3rd attribute called "Weather" (title "Weather") updated with the ('weather') from the weather API response, and the 4th attribute called "Weather_Note" (title "Weather Note") updated with the ('note') from the weather API response. 
+Update the user with the new attribute values. 
+The new user is a manager and needs to be added to the managers group. 
+She also needs to be assigned to the following groups: "Smith_Family", "Smiths", "zone_one", "zone_two", "zone_four", and "zone_five".
+DONE!!!!
+🔄 Auto-retry 1/3 — still extracting answers from your prompt...
+
+📦 Final JSON: (Executing 25)
 [
   {
-    "task": "get_future_date",
+    "task": "Get Future Date",
     "data": {
-      "start_date": "today",
-      "duration_in_days": "5"
+      "What is the timeframe/period (next week or next month)?*": "next month",
+      "What is the duration of the trip (number of days)?*": "5"
     }
   },
   {
-    "task": "get_weather_in_period",
+    "task": "Get Weather in Period",
     "data": {
-      "location": "Washington DC",
-      "start_date": "${Get Future Date.start_date}",
-      "end_date": "${Get Future Date.end_date}"
+      "What is the location (city name)?*": "Washington, D.C.",
+      "What is the start date (YYYY-MM-DD)? (If a date was calculated, answer with exactly '${Get Future Date.start_date}'. Otherwise, provide the date)*": "${Get Future Date.start_date}",
+      "What is the end date (YYYY-MM-DD)? (If a date was calculated, answer with exactly '${Get Future Date.end_date}'. Otherwise, provide the date)*": "${Get Future Date.end_date}"
     }
   },
-  ...
+  {
+    "task": "Create Okta User",
+    "data": {
+      "What is the new okta user's first name?*": "Amanda",
+      "What is the new okta user's last name?*": "Smith",
+      "What is the new okta user's email?*": "Amanda.smith@gmail.com",
+      "What is the user's job title?": "manager",
+      "What's the user's username?*": "Amanda.smith@gmail.com"
+    }
+  },
+  {
+    "task": "Add Okta Attribute",
+    "data": {
+      "What is the name of the new Okta attribute?*": "Location",
+      "What is the title/label of the new Okta attribute?": "Location",
+      "What is the type of the new Okta attribute? (string/number/boolean)": "string"
+    }
+  },
+  {
+    "task": "Add Okta Attribute",
+    "data": {
+      "What is the name of the new Okta attribute?*": "Duration",
+      "What is the title/label of the new Okta attribute?": "Duration",
+      "What is the type of the new Okta attribute? (string/number/boolean)": "number"
+    }
+  },
+  {
+    "task": "Add Okta Attribute",
+    "data": {
+      "What is the name of the new Okta attribute?*": "Weather",
+      "What is the title/label of the new Okta attribute?": "Weather",
+      "What is the type of the new Okta attribute? (string/number/boolean)": "string"
+    }
+  },
+  {
+    "task": "Add Okta Attribute",
+    "data": {
+      "What is the name of the new Okta attribute?*": "Weather_Note",
+      "What is the title/label of the new Okta attribute?": "Weather Note",
+      "What is the type of the new Okta attribute? (string/number/boolean)": "string"
+    }
+  },
+  {
+    "task": "Update Okta User",
+    "data": {
+      "What is the ID of the user? (If a user was just created or selected, answer with exactly '${Create Okta User.id}' or '${Find a user by first name and last name.id}'. Otherwise, provide the actual ID)**": "${Create Okta User.id}",
+      "What is the name of the attribute to update?*": "Location",
+      "What is the value to set for this attribute?*": "Washington, D.C."
+    }
+  },
+  {
+    "task": "Update Okta User",
+    "data": {
+      "What is the ID of the user? (If a user was just created or selected, answer with exactly '${Create Okta User.id}' or '${Find a user by first name and last name.id}'. Otherwise, provide the actual ID)**": "${Create Okta User.id}",
+      "What is the name of the attribute to update?*": "Duration",
+      "What is the value to set for this attribute?*": "5"
+    }
+  },
+  {
+    "task": "Update Okta User",
+    "data": {
+      "What is the ID of the user? (If a user was just created or selected, answer with exactly '${Create Okta User.id}' or '${Find a user by first name and last name.id}'. Otherwise, provide the actual ID)**": "${Create Okta User.id}",
+      "What is the name of the attribute to update?*": "Weather",
+      "What is the value to set for this attribute?*": "${Get Weather in Period.weather}"
+    }
+  },
+  {
+    "task": "Update Okta User",
+    "data": {
+      "What is the ID of the user? (If a user was just created or selected, answer with exactly '${Create Okta User.id}' or '${Find a user by first name and last name.id}'. Otherwise, provide the actual ID)**": "${Create Okta User.id}",
+      "What is the name of the attribute to update?*": "Weather_Note",
+      "What is the value to set for this attribute?*": "${Get Weather in Period.note}"
+    }
+  },
+  {
+    "task": "Select Group By Name",
+    "data": {
+      "What is the name of the Okta group to search for?*": "managers"
+    }
+  },
+  {
+    "task": "Assign User to Group",
+    "data": {
+      "What is the ID of the Okta group? (If a group was just created or selected, answer with exactly '${Create Okta Group.id}' or '${Select Group By Name.id}'. Otherwise, provide the actual ID)*": "${Select Group By Name.id}",
+      "What is the email or ID of the user to assign? (If a user was just created, answer with exactly '${Create Okta User.id}'. Otherwise, provide the email or ID)*": "${Create Okta User.id}"
+    }
+  },
+  {
+    "task": "Select Group By Name",
+    "data": {
+      "What is the name of the Okta group to search for?*": "Smith_Family"
+    }
+  },
+  {
+    "task": "Assign User to Group",
+    "data": {
+      "What is the ID of the Okta group? (If a group was just created or selected, answer with exactly '${Create Okta Group.id}' or '${Select Group By Name.id}'. Otherwise, provide the actual ID)*": "${Select Group By Name.id}",
+      "What is the email or ID of the user to assign? (If a user was just created, answer with exactly '${Create Okta User.id}'. Otherwise, provide the email or ID)*": "${Create Okta User.id}"
+    }
+  },
+  {
+    "task": "Select Group By Name",
+    "data": {
+      "What is the name of the Okta group to search for?*": "Smiths"
+    }
+  },
+  {
+    "task": "Assign User to Group",
+    "data": {
+      "What is the ID of the Okta group? (If a group was just created or selected, answer with exactly '${Create Okta Group.id}' or '${Select Group By Name.id}'. Otherwise, provide the actual ID)*": "${Select Group By Name.id}",
+      "What is the email or ID of the user to assign? (If a user was just created, answer with exactly '${Create Okta User.id}'. Otherwise, provide the email or ID)*": "${Create Okta User.id}"
+    }
+  },
+  {
+    "task": "Select Group By Name",
+    "data": {
+      "What is the name of the Okta group to search for?*": "zone_one"
+    }
+  },
+  {
+    "task": "Assign User to Group",
+    "data": {
+      "What is the ID of the Okta group? (If a group was just created or selected, answer with exactly '${Create Okta Group.id}' or '${Select Group By Name.id}'. Otherwise, provide the actual ID)*": "${Select Group By Name.id}",
+      "What is the email or ID of the user to assign? (If a user was just created, answer with exactly '${Create Okta User.id}'. Otherwise, provide the email or ID)*": "${Create Okta User.id}"
+    }
+  },
+  {
+    "task": "Select Group By Name",
+    "data": {
+      "What is the name of the Okta group to search for?*": "zone_two"
+    }
+  },
+  {
+    "task": "Assign User to Group",
+    "data": {
+      "What is the ID of the Okta group? (If a group was just created or selected, answer with exactly '${Create Okta Group.id}' or '${Select Group By Name.id}'. Otherwise, provide the actual ID)*": "${Select Group By Name.id}",
+      "What is the email or ID of the user to assign? (If a user was just created, answer with exactly '${Create Okta User.id}'. Otherwise, provide the email or ID)*": "${Create Okta User.id}"
+    }
+  },
+  {
+    "task": "Select Group By Name",
+    "data": {
+      "What is the name of the Okta group to search for?*": "zone_four"
+    }
+  },
+  {
+    "task": "Assign User to Group",
+    "data": {
+      "What is the ID of the Okta group? (If a group was just created or selected, answer with exactly '${Create Okta Group.id}' or '${Select Group By Name.id}'. Otherwise, provide the actual ID)*": "${Select Group By Name.id}",
+      "What is the email or ID of the user to assign? (If a user was just created, answer with exactly '${Create Okta User.id}'. Otherwise, provide the email or ID)*": "${Create Okta User.id}"
+    }
+  },
+  {
+    "task": "Select Group By Name",
+    "data": {
+      "What is the name of the Okta group to search for?*": "zone_five"
+    }
+  },
+  {
+    "task": "Assign User to Group",
+    "data": {
+      "What is the ID of the Okta group? (If a group was just created or selected, answer with exactly '${Create Okta Group.id}' or '${Select Group By Name.id}'. Otherwise, provide the actual ID)*": "${Select Group By Name.id}",
+      "What is the email or ID of the user to assign? (If a user was just created, answer with exactly '${Create Okta User.id}'. Otherwise, provide the email or ID)*": "${Create Okta User.id}"
+    }
+  }
 ]
+
+✅ Thank you for using Task Assistant service.
+👋 Exiting Task Assistant.
+
+📝 🧠 What do you want to do? (type 'exit' to quit, 'run' to execute one task with a pause, or 'automate' to execute all tasks without pauses)
 ```
 
 ---

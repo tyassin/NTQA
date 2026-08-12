@@ -68,7 +68,7 @@ class TaskManager:
             "- If a task's question can be answered using a reference to another identified task's output (e.g., '${Get Future Date.start_date}', '${Get Future Date.end_date}', or '${Select Group By Name.id}'), automatically fill in that reference as the answer instead of asking the user.\n"
             "- If the user prompt specifies an attribute name such as ('weather') or ('note'), that attribute is the exact name in a reference task's output (e.g., '${Get Weather in Period.weather}', '${Get Weather in Period.note}', or '${Select Group By Name.id}'), automatically fill in that reference as the answer instead of asking the user.\n"
             "- find the group then directly assign the user to the group. don't do 2 lookups for the group. just do one lookup and get the group id and then assign the user to the group.\n"
-            "- If tasks are repeated is such a way find or selct and then create or update or assing, run the select/find task first and then the create/update/assign task after the select/find task since the data is related and IDs maybe overwritten in the memory due to the previous task's output.(e.g. find user and then update user, or find group and then add or assign user to group)\n"
+            "- If tasks are repeated is such a way find or select and then create or update or assing, run the select/find task first and then the create/update/assign task after the select/find task since the data is related and IDs maybe overwritten in the memory due to the previous task's output.(e.g. find user and then update user, or find group and then add or assign user to group)\n"
             "- If all required questions for all identified tasks are answered, return a JSON list of completed tasks:\n"
             "  [\n"
             "    {\n"
@@ -303,8 +303,6 @@ def execute_task(task_name, data, tm=None, context=None, pause=True):
                 summary_prompt = f"The output of the command `{command}` was:\n\n{output or '[No output]'}"
                 if error:
                     summary_prompt += f"\n\nThere were also errors:\n{error}"
-                reply = execution_convo.send_message(summary_prompt)
-                print("🤖", reply.text.strip())
     except FileNotFoundError:
         print(f"❌ Command not found: {command}")
     except Exception as e:
