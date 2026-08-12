@@ -1,0 +1,9 @@
+"Amanda Smith" is traveling to Washington DC next week for a 5 day trip. She wants to be informed about the weather during her stay. 
+Create a new okta user using her first dot last names at gmail as username and email. 
+Then create or update 4 new attributes one called location "Location", title "Location". 
+The 2nd attribute is called "Duration", title "Duration" and set duration in days. 
+The 3rd attribute is called "Weather", title "Weather", updated with the ('weather') from weather api response. 
+The 4th attribute is called "Weather_Note", title "Weather Note", updated it with ('note') from the weather api response.
+Update the user with the new attribute values.
+The new user is manager and needs to be added to the managers group. 
+She also needs to be assigned to the following groups "Smith_Family", "Smiths", "zone_one", "zone_two", "zone_four", and "zone_five"

@@ -1,0 +1,18 @@
+{
+    "task_name": "Add Okta Attribute",
+    "description": "Add a new custom attribute to the Okta User schema",
+    "_command_old": "python okta_user_account.py add-attribute",
+    "command": [
+        "curl -sS -X POST \\",
+        "  -H \"Accept: application/json\" \\",
+        "  -H \"Content-Type: application/json\" \\",
+        "  -H \"Authorization: SSWS $OKTA_API_TOKEN\" \\",
+        "  -d '{\"definitions\": {\"custom\": {\"id\": \"#custom\", \"type\": \"object\", \"properties\": {\"${answer1}\": {\"title\": \"${answer2}\", \"type\": \"${answer3}\", \"required\": false}}}}}' \\",
+        "  \"$OKTA_URL/api/v1/meta/schemas/user/default\""
+    ],
+    "questions": [
+        "What is the name of the new Okta attribute?*",
+        "What is the title/label of the new Okta attribute?",
+        "What is the type of the new Okta attribute? (string/number/boolean)"
+    ]
+}

@@ -1,0 +1,9 @@
+{
+    "task_name": "Get Future Date",
+    "description": "Calculate and return the start and end dates for a future trip based on timeframe and duration.",
+    "command": "python3 get_future_date.py '${answer1}' '${answer2}'",
+    "questions": [
+        "What is the timeframe/period (next week or next month)?*",
+        "What is the duration of the trip (number of days)?*"
+    ]
+}

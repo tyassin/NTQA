@@ -1,6 +1,15 @@
 {
   "task_name": "Create Okta User",
   "description": "Create a new OKTA user profile!",
+  "_command_old": "python okta_user_account.py create",
+  "command": [
+    "curl -sS -X POST \\",
+    "  -H \"Accept: application/json\" \\",
+    "  -H \"Content-Type: application/json\" \\",
+    "  -H \"Authorization: SSWS $OKTA_API_TOKEN\" \\",
+    "  -d '{\"profile\": {\"firstName\": \"${answer1}\", \"lastName\": \"${answer2}\", \"email\": \"${answer3}\", \"title\": \"${answer4}\", \"login\": \"${answer5}\"}, \"credentials\": {\"password\": {\"value\": \"TempPass123!\"}}}' \\",
+    "  \"$OKTA_URL/api/v1/users?activate=true\""
+  ],
   "questions": [
     "What is the new okta user's first name?*",
     "What is the new okta user's last name?*",

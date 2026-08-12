@@ -1,0 +1,14 @@
+{
+    "task_name": "Select Group By Name",
+    "description": "Search for an Okta group by its name and return its ID.",
+    "command": [
+        "curl -sS -X GET \\",
+        "  -H \"Accept: application/json\" \\",
+        "  -H \"Content-Type: application/json\" \\",
+        "  -H \"Authorization: SSWS $OKTA_API_TOKEN\" \\",
+        "  \"$OKTA_URL/api/v1/groups?q=${answer1}\" | python -c 'import sys, json; text=sys.stdin.read(); exec(\"try:\\n data=json.loads(text)\\n print(json.dumps({\\\"id\\\": data[0][\\\"id\\\"]} if isinstance(data, list) and data else {\\\"error\\\": \\\"Not found\\\"}))\\nexcept: print(json.dumps({\\\"error\\\": \\\"Invalid response\\\"}))\")'"
+    ],
+    "questions": [
+        "What is the name of the Okta group to search for?*"
+    ]
+}
