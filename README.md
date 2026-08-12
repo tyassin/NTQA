@@ -219,7 +219,7 @@ You may also type 'automate' or 'run' to execute the completed task.
 
 NTQA shines when chaining multiple tasks together. Try copying and pasting the following prompt into the assistant to see it orchestrate multiple actions automatically:
 
-> "Amanda Smith" is traveling to Washington DC next week for 5 days. She wants to be informed about the weather during her stay. 
+> "Amanda Smith" is traveling to Washington DC next week for a 5 day trip. She wants to be informed about the weather during her stay. 
 > Create a new okta user using her first dot last names at gmail as username and email. 
 > Then create or update 4 new attributes one called location 'Location', title 'Location'. 
 > The 2nd attribute is called 'Duration', title 'Duration' and set duration in days. 
@@ -242,7 +242,7 @@ python task_run.py
 
 📝 🧠 What do you want to do? (type 'exit' to quit)
    (type your message across multiple lines — press Enter on a blank line to submit)
-"Amanda Smith" is traveling to Washington DC next month for a 5 day trip. She wants to be informed about the weather during her stay. 
+"Amanda Smith" is traveling to Washington DC next week for a 5 day trip. She wants to be informed about the weather during her stay. 
 Create a new okta user using her first dot last names at gmail as username and email. 
 Then create or update 4 new attributes one called location "Location", title "Location". 
 The 2nd attribute is called "Duration", title "Duration" and set duration in days. 
@@ -252,7 +252,7 @@ Update the user with the new attribute values.
 The new user is manager and needs to be added to the managers group. 
 She also needs to be assigned to the following groups "Smith_Family", "Smiths", "zone_one", "zone_two", "zone_four", and "zone_five"
 
-✏️  (spell-corrected) "Amanda Smith" is traveling to Washington, D.C. next month for a 5-day trip. She wants to be informed about the weather during her stay. 
+✏️  (spell-corrected) "Amanda Smith" is traveling to Washington, D.C. next week for a 5-day trip. She wants to be informed about the weather during her stay. 
 Create a new Okta user using her first dot last name at gmail as the username and email. 
 Then, create or update 4 new attributes: one called "Location" (title "Location"), the 2nd attribute called "Duration" (title "Duration") set to the duration in days, the 3rd attribute called "Weather" (title "Weather") updated with the ('weather') from the weather API response, and the 4th attribute called "Weather_Note" (title "Weather Note") updated with the ('note') from the weather API response. 
 Update the user with the new attribute values. 
@@ -266,7 +266,7 @@ DONE!!!!
   {
     "task": "Get Future Date",
     "data": {
-      "What is the timeframe/period (next week or next month)?*": "next month",
+      "What is the timeframe/period (next week or next month)?*": "next week",
       "What is the duration of the trip (number of days)?*": "5"
     }
   },
