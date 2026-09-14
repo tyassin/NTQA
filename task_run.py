@@ -22,6 +22,27 @@ client = genai.Client(api_key=args.api_key)
 
 TASK_FOLDER = "tasks"
 
+def get_response_text(response) -> str:
+    """Safely extracts concatenated text from Gemini response parts without triggering thought_signature or non-text warnings."""
+    if not response:
+        return ""
+    try:
+        if hasattr(response, 'candidates') and response.candidates:
+            first_cand = response.candidates[0]
+            if first_cand.content and first_cand.content.parts:
+                texts = [
+                    p.text for p in first_cand.content.parts
+                    if hasattr(p, 'text') and isinstance(p.text, str) and not getattr(p, 'thought', False)
+                ]
+                if texts:
+                    return "".join(texts)
+    except Exception:
+        pass
+    try:
+        return response.text or ""
+    except Exception:
+        return ""
+
 class TaskManager:
     def __init__(self, folder):
         self.tasks = self.load_tasks(folder)
@@ -62,14 +83,15 @@ class TaskManager:
             "Instructions:\n"
             "- A user will describe one or more tasks.\n"
             "- Identify the task names and required questions for each task.\n"
+            "- IMPORTANT: Only questions marked with an asterisk '*' at the end are required. Optional questions (without '*') must NEVER be asked unless the user explicitly provided their value.\n"
             "- IMPORTANT: Before asking ANY question, carefully scan the entire user prompt for all possible answers to all identified tasks across all turns of the conversation. Only ask a required question if you are certain it is not anywhere in the prompt.\n"
             "- Ask only one unanswered required question at a time across all identified tasks.\n"
             "- Don't ask non-required questions, unless the user provides the question and its answer.\n"
             "- If a task's question can be answered using a reference to another identified task's output (e.g., '${Get Future Date.start_date}', '${Get Future Date.end_date}', or '${Select Group By Name.id}'), automatically fill in that reference as the answer instead of asking the user.\n"
             "- If the user prompt specifies an attribute name such as ('weather') or ('note'), that attribute is the exact name in a reference task's output (e.g., '${Get Weather in Period.weather}', '${Get Weather in Period.note}', or '${Select Group By Name.id}'), automatically fill in that reference as the answer instead of asking the user.\n"
-            "- find the group then directly assign the user to the group. don't do 2 lookups for the group. just do one lookup and get the group id and then assign the user to the group.\n"
+            "- MULTI-ENTITY ORDERING: When adding a user to multiple groups (or processing multiple items), you must interleave each lookup and action immediately: (1) Select Group A -> (2) Assign User to Group A -> (3) Select Group B -> (4) Assign User to Group B. Never batch all group lookups first because variable reference ${Select Group By Name.id} will be overwritten.\n"
             "- If tasks are repeated is such a way find or select and then create or update or assing, run the select/find task first and then the create/update/assign task after the select/find task since the data is related and IDs maybe overwritten in the memory due to the previous task's output.(e.g. find user and then update user, or find group and then add or assign user to group)\n"
-            "- If all required questions for all identified tasks are answered, return a JSON list of completed tasks:\n"
+            "- If all required questions for all identified tasks are answered (either directly from user input or via ${TaskName.field} references), return a JSON list of completed tasks:\n"
             "  [\n"
             "    {\n"
             '      "task": "task_name_1",\n'
@@ -120,20 +142,45 @@ def ask_user_multi_lines(prompt_text):
 
 def correct_spelling(text):
     """Fix spelling/grammar in user input silently before evaluation."""
+    if not text or not text.strip():
+        return text
     try:
         fix_prompt = (
             "Fix any spelling mistakes, typos, and grammar errors in the following text. "
-            "Keep the original meaning, names, and intent exactly as-is. "
+            "Keep the original meaning, names, task names, commands, and intent exactly as-is. "
             "Return only the corrected text with no explanation:\n\n" + text
         )
         result = client.models.generate_content(model=args.model, contents=fix_prompt)
-        corrected = result.text.strip()
+        corrected = get_response_text(result).strip()
         if corrected and corrected != text:
             print(f"✏️  (spell-corrected) {corrected}")
         return corrected if corrected else text
     except Exception:
         return text
 
+
+def normalize_key_string(k):
+    if not k:
+        return ""
+    return re.sub(r'[^a-zA-Z0-9]', '', str(k)).lower()
+
+def match_answer_for_question(question, answers_dict):
+    if not answers_dict:
+        return None
+    # 1. Exact match
+    if question in answers_dict and answers_dict[question] is not None and str(answers_dict[question]).strip():
+        return answers_dict[question]
+    # 2. Normalized match (strip *, ?, spaces, punctuation, case)
+    norm_q = normalize_key_string(question)
+    for k, v in answers_dict.items():
+        if normalize_key_string(k) == norm_q and v is not None and str(v).strip():
+            return v
+    # 3. Substring / Prefix match
+    for k, v in answers_dict.items():
+        norm_k = normalize_key_string(k)
+        if len(norm_k) >= 3 and (norm_k in norm_q or norm_q in norm_k) and v is not None and str(v).strip():
+            return v
+    return None
 
 def check_completed(parsed, tm):
     """Return (is_complete, normalized_list_or_None)."""
@@ -142,13 +189,39 @@ def check_completed(parsed, tm):
     if isinstance(parsed, dict):
         parsed = [parsed]
     if isinstance(parsed, list):
+        normalized_tasks = []
         for t_parsed in parsed:
+            if not isinstance(t_parsed, dict):
+                return False, parsed
             t_name = t_parsed.get("task")
             t_data = t_parsed.get("data", {})
             task = tm.get_task_by_name(t_name) if t_name else None
-            if not task or not is_complete(tm.get_required_keys(task), t_data):
+            if not task:
                 return False, parsed
-        return True, parsed
+            
+            # Map answers to canonical question strings
+            canonical_data = {}
+            for q in task.get("questions", []):
+                val = match_answer_for_question(q, t_data)
+                if val is not None:
+                    canonical_data[q] = val
+            
+            # Verify required keys
+            req_keys = tm.get_required_keys(task)
+            for req in req_keys:
+                if req not in canonical_data or not str(canonical_data[req]).strip():
+                    return False, parsed
+            
+            # Preserve any additional attributes provided
+            for k, v in t_data.items():
+                if k not in canonical_data and v is not None and str(v).strip():
+                    canonical_data[k] = v
+            
+            normalized_tasks.append({
+                "task": task["task_name"],
+                "data": canonical_data
+            })
+        return True, normalized_tasks
     return False, None
 
 
@@ -168,24 +241,35 @@ def print_final(tasks):
     print("👋 Exiting Task Assistant.")
 
 def try_parse_json(text):
-    # Strip markdown code block if present
-    if text.strip().startswith("```json"):
-        text = text.strip()[7:].strip()  # remove ```json and leading space/newlines
-    if text.strip().endswith("```"):
-        text = text.strip()[:-3].strip()  # remove ending ```
-    match = re.search(r"(\[.*\]|\{.*\})", text, re.DOTALL)
+    if not text:
+        return None
+    text_str = text.strip()
+    
+    # 1. Try finding markdown json code block ```json ... ```
+    json_block = re.search(r"```(?:json)?\s*([\s\S]*?)\s*```", text_str)
+    if json_block:
+        candidate = json_block.group(1).strip()
+        try:
+            return json.loads(candidate)
+        except Exception:
+            try:
+                import ast
+                return ast.literal_eval(candidate)
+            except Exception:
+                pass
+                
+    # 2. Try regex search for top-level array [ ... ] or object { ... }
+    match = re.search(r"(\[[\s\S]*\]|\{[\s\S]*\})", text_str)
     if match:
         raw_text = match.group(0)
         try:
             return json.loads(raw_text)
         except json.JSONDecodeError as e:
-            # Fallback to ast.literal_eval for single-quoted or trailing-comma structures
             try:
                 import ast
                 return ast.literal_eval(raw_text)
             except Exception:
-                print("⚠️ JSON decode error:", e)
-    print ("DONE!!!!")
+                pass
     return None
 
 
@@ -275,7 +359,7 @@ def execute_task(task_name, data, tm=None, context=None, pause=True):
             summary_prompt += "\n\nPlease provide a clear, helpful, human-friendly summary of this result."
             reply = execution_convo.send_message(summary_prompt)
             output_sent = True
-            print("🤖", reply.text.strip())
+            print("🤖", get_response_text(reply).strip())
             print("")
         else:
             if pause:
@@ -297,12 +381,14 @@ def execute_task(task_name, data, tm=None, context=None, pause=True):
                     else:
                         reply = execution_convo.send_message(follow_up)
 
-                    print("🤖", reply.text.strip())
+                    print("🤖", get_response_text(reply).strip())
             else:
                 print("🤖 Auto-summarizing the result of task: " + task_name)
                 summary_prompt = f"The output of the command `{command}` was:\n\n{output or '[No output]'}"
                 if error:
                     summary_prompt += f"\n\nThere were also errors:\n{error}"
+                reply = execution_convo.send_message(summary_prompt)
+                print("🤖", get_response_text(reply).strip())
     except FileNotFoundError:
         print(f"❌ Command not found: {command}")
     except Exception as e:
@@ -313,24 +399,25 @@ last_tasks = []
 
 def main():
     global last_tasks
+    from google.genai import types
     tm = TaskManager(TASK_FOLDER)
     system_prompt = tm.generate_prompt()
 
     print(f"🤖 Gemini Task Assistant Initialized using model: {args.model}")
     while True:
-        convo = client.chats.create(model=args.model, history=[{"role": "user", "parts": [{"text": system_prompt}]}])
+        convo = client.chats.create(
+            model=args.model,
+            history=[{"role": "user", "parts": [{"text": system_prompt}]}]
+        )
         if last_tasks:
             sys_prompt = "🧠 What do you want to do? (type 'exit' to quit, 'run' to execute one task with a pause, or 'automate' to execute all tasks without pauses)"
             user_input = ask_user_single_line(sys_prompt)
         else:
             sys_prompt = "🧠 What do you want to do? (type 'exit' to quit)"
             user_input = ask_user_multi_lines(sys_prompt)
-        #if not last_tasks:
-        #    user_input += ". All required questions are answered in this prompt."
         if user_input.lower() in ['exit', 'quit', 'bye']:
             print_final(last_tasks)
             break
-        #print("user_input we'll be using is: " + user_input)
         if user_input.lower() in ['run', 'automate']:
             if user_input.lower() == 'automate':
                 pause = False
@@ -353,7 +440,7 @@ def main():
         MAX_AUTO_RETRIES = 3
         is_completed_flow = False
         parsed = None
-        response = None
+        response_text = ""
 
         for attempt in range(1, MAX_AUTO_RETRIES + 1):
             if attempt == 1:
@@ -366,7 +453,8 @@ def main():
                     "Do not ask the user anything yet — all answers should be in the conversation so far."
                 )
             response = convo.send_message(send_text)
-            parsed = try_parse_json(response.text)
+            response_text = get_response_text(response)
+            parsed = try_parse_json(response_text)
             done, normalized = check_completed(parsed, tm)
             if done:
                 last_tasks = normalized
@@ -378,7 +466,7 @@ def main():
         # Show LLM response if still incomplete after all retries
         if not is_completed_flow:
             if not parsed:
-                print(response.text)
+                print(response_text)
             else:
                 print(json.dumps(parsed, indent=2))
 
@@ -406,14 +494,15 @@ def main():
             # Fix spelling in follow-up answers too
             corrected_answer = correct_spelling(user_input)
             response = convo.send_message(corrected_answer)
-            parsed = try_parse_json(response.text)
+            response_text = get_response_text(response)
+            parsed = try_parse_json(response_text)
             done, normalized = check_completed(parsed, tm)
             if done:
                 last_tasks = normalized
                 is_completed_flow = True
             else:
                 if not parsed:
-                    print(response.text)
+                    print(response_text)
                 else:
                     print(json.dumps(parsed, indent=2))
 

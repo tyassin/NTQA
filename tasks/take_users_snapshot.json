@@ -1,0 +1,14 @@
+{
+  "task_name": "Take Users Snapshot",
+  "description": "Fetch all Okta users and save them as a snapshot file for backup, tracking, or difference comparison.",
+  "command": [
+    "mkdir -p snapshots && curl -sS -X GET \\",
+    "  -H \"Accept: application/json\" \\",
+    "  -H \"Content-Type: application/json\" \\",
+    "  -H \"Authorization: SSWS $OKTA_API_TOKEN\" \\",
+    "  \"$OKTA_URL/api/v1/users?limit=200\" | python3 -c 'import sys, os, json; text=sys.stdin.read(); data=json.loads(text) if text.strip() else []; tag=\"${answer1}\".strip() or \"snapshot\"; os.makedirs(\"snapshots\", exist_ok=True); filepath=f\"snapshots/users_snapshot_{tag}.json\"; open(filepath, \"w\").write(json.dumps(data, indent=2)); print(json.dumps({\"snapshot_file\": filepath, \"snapshot_tag\": tag, \"total_users\": len(data), \"status\": \"saved\"}))'"
+  ],
+  "questions": [
+    "What is the label or tag for this snapshot? (e.g. 'initial', 'before_delete', 'after_delete', 'snapshot_1')*"
+  ]
+}

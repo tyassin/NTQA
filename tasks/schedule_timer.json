@@ -1,0 +1,8 @@
+{
+  "task_name": "Schedule Timer",
+  "description": "Wait or pause execution for a specified duration in seconds before proceeding to the next task.",
+  "command": "python3 -c 'import sys, time, json, re; raw=\"${answer1}\"; match=re.search(r\"\\d+\", raw); secs=int(match.group()) if match else 10; print(f\"⏳ Waiting for {secs} seconds...\"); time.sleep(secs); print(json.dumps({\"status\": \"completed\", \"waited_seconds\": secs}))'",
+  "questions": [
+    "How many seconds or duration should the timer wait? (e.g. 5, 10, 30, 60)*"
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "task_name": "Delete Okta User",
+  "description": "Deactivate and permanently delete an Okta user by their user ID, login, or email.",
+  "command": [
+    "curl -sS -X POST \\",
+    "  -H \"Accept: application/json\" \\",
+    "  -H \"Content-Type: application/json\" \\",
+    "  -H \"Authorization: SSWS $OKTA_API_TOKEN\" \\",
+    "  \"$OKTA_URL/api/v1/users/${answer1}/lifecycle/deactivate\" >/dev/null 2>&1 ; \\",
+    "curl -sS -X DELETE \\",
+    "  -H \"Accept: application/json\" \\",
+    "  -H \"Content-Type: application/json\" \\",
+    "  -H \"Authorization: SSWS $OKTA_API_TOKEN\" \\",
+    "  \"$OKTA_URL/api/v1/users/${answer1}\" | python3 -c 'import sys, json; print(json.dumps({\"status\": \"deleted\", \"user\": \"${answer1}\"}))'"
+  ],
+  "questions": [
+    "What is the email, username, or ID of the user to delete?*"
+  ]
+}

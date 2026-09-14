@@ -7,4 +7,7 @@ images/
 NTQA.code-workspace
 .vscode/
 .env
-
+mine/
+.idea/
+snapshots/
+newCleaned/

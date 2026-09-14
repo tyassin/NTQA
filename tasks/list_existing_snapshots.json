@@ -1,0 +1,9 @@
+{
+  "task_name": "List Existing Snapshots",
+  "description": "List all existing saved user snapshots, their filenames, tags, modification times, and user counts.",
+  "command": "python3 -c 'import os, glob, json, time; dir_path = \"${answer1}\".strip() or \"snapshots\"; os.makedirs(dir_path, exist_ok=True); files = sorted(glob.glob(os.path.join(dir_path, \"*.json\")), key=os.path.getmtime, reverse=True); snapshots = []; [snapshots.append({\"file\": f, \"tag\": os.path.basename(f).replace(\"users_snapshot_\", \"\").replace(\".json\", \"\"), \"user_count\": len(json.load(open(f))) if isinstance(json.load(open(f)), list) else 0, \"modified\": time.strftime(\"%Y-%m-%d %H:%M:%S\", time.localtime(os.path.getmtime(f)))}) for f in files if f.endswith(\".json\")]; print(json.dumps({\"snapshots\": snapshots, \"total_snapshots\": len(snapshots)}))'",
+  "auto_summarize": true,
+  "questions": [
+    "What directory or snapshot tag should be listed? (Default: 'snapshots')"
+  ]
+}

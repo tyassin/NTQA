@@ -462,6 +462,10 @@ You can use the following commands at any prompt:
 *   **`continue`** (or **`c`**): When in `run` mode, proceeds to the next task.
 *   **`exit`**, **`quit`**, or **`bye`**: Exits the assistant immediately and prints the final JSON (complete or not).
 
+## Run the server using: 
+```
+uvicorn api:app --reload
+```
 ---
 
 ## 📞 Support
