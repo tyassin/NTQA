@@ -11,3 +11,8 @@ mine/
 .idea/
 snapshots/
 newCleaned/
+*.db
+prompts mine.txt
+req_before_upgrade.txt
+users_diff_report.csv
+successful run.txt
