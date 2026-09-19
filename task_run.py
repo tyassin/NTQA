@@ -49,17 +49,30 @@ class TaskManager:
 
     def load_tasks(self, folder):
         tasks = []
-        for file in os.listdir(folder):
-            if file.endswith(".json"):
-                with open(os.path.join(folder, file)) as f:
-                    task = json.load(f)
-                    task["output_schema"] = task.get("output_schema", {
-                        self.clean_key(q): "" for q in task.get("questions", [])
-                    })
-                    task["key_map"] = {
-                        self.clean_key(q): q for q in task.get("questions", [])
-                    }
-                    tasks.append(task)
+        if not os.path.exists(folder):
+            os.makedirs(folder, exist_ok=True)
+            return tasks
+
+        for root, _, files in os.walk(folder):
+            rel_dir = os.path.relpath(root, folder)
+            pack_name = "General" if rel_dir == "." else rel_dir.replace(os.sep, "/").title()
+            for file in sorted(files):
+                if file.endswith(".json"):
+                    file_path = os.path.join(root, file)
+                    try:
+                        with open(file_path, "r", encoding="utf-8") as f:
+                            task = json.load(f)
+                            task["category"] = task.get("category", pack_name)
+                            task["file_path"] = os.path.relpath(file_path, folder)
+                            task["output_schema"] = task.get("output_schema", {
+                                self.clean_key(q): "" for q in task.get("questions", [])
+                            })
+                            task["key_map"] = {
+                                self.clean_key(q): q for q in task.get("questions", [])
+                            }
+                            tasks.append(task)
+                    except Exception as e:
+                        print(f"⚠️ Warning: Failed to load task file {file_path}: {e}")
         return tasks
 
     def clean_key(self, question):
@@ -87,7 +100,12 @@ class TaskManager:
             "- IMPORTANT: Before asking ANY question, carefully scan the entire user prompt for all possible answers to all identified tasks across all turns of the conversation. Only ask a required question if you are certain it is not anywhere in the prompt.\n"
             "- Ask only one unanswered required question at a time across all identified tasks.\n"
             "- Don't ask non-required questions, unless the user provides the question and its answer.\n"
-            "- If a task's question can be answered using a reference to another identified task's output (e.g., '${Get Future Date.start_date}', '${Get Future Date.end_date}', or '${Select Group By Name.id}'), automatically fill in that reference as the answer instead of asking the user.\n"
+            "- If a task's question can be answered using a reference to another identified task's output (e.g., '${Get Future Date.start_date}', '${Get Future Date.end_date}', '${Select Group By Name.id}', '${Compare Users Snapshots to Excel.all_files}', or '${Zip Files.archive_path}'), automatically fill in that reference as the answer instead of asking the user.\n"
+            "- PIPELINE TASK CHAINING: When a user prompt requests a multi-step workflow (such as comparing snapshots, archiving/zipping results, and downloading files):\n"
+            "  * Automatically identify all required tasks in the chain.\n"
+            "  * Extract snapshot tags/names from the prompt (e.g. 'before' and 'after') for 'Compare Users Snapshots to Excel'.\n"
+            "  * For 'Zip Files', set the files question to '${Compare Users Snapshots to Excel.all_files}' (or '${Compare Users Snapshots to Excel.diff_file}') and the output archive name to the requested zip name (e.g. 'final.zip').\n"
+            "  * For 'Download File to Browser', set the file question to '${Zip Files.archive_path}' (or the archive filename).\n"
             "- If the user prompt specifies an attribute name such as ('weather') or ('note'), that attribute is the exact name in a reference task's output (e.g., '${Get Weather in Period.weather}', '${Get Weather in Period.note}', or '${Select Group By Name.id}'), automatically fill in that reference as the answer instead of asking the user.\n"
             "- MULTI-ENTITY ORDERING: When adding a user to multiple groups (or processing multiple items), you must interleave each lookup and action immediately: (1) Select Group A -> (2) Assign User to Group A -> (3) Select Group B -> (4) Assign User to Group B. Never batch all group lookups first because variable reference ${Select Group By Name.id} will be overwritten.\n"
             "- If tasks are repeated is such a way find or select and then create or update or assing, run the select/find task first and then the create/update/assign task after the select/find task since the data is related and IDs maybe overwritten in the memory due to the previous task's output.(e.g. find user and then update user, or find group and then add or assign user to group)\n"

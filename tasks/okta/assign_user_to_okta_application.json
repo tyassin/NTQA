@@ -1,0 +1,9 @@
+{
+  "task_name": "Assign User To Okta Application",
+  "description": "Assigns a specified Okta user to an application using the user ID and the application ID.",
+  "command": "curl -X POST \"${OKTA_URL}/api/v1/apps/${answer2}/users\" -H \"Authorization: SSWS ${OKTA_API_TOKEN}\" -H \"Content-Type: application/json\" -d '{\"id\": \"${answer1}\"}' | python3 -c 'import sys, json; print(json.dumps(json.load(sys.stdin)))'",
+  "questions": [
+    "What is the Okta user ID?*",
+    "What is the Okta application ID?*"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "task_name": "Create Okta Application",
+  "description": "Creates a new application integration in Okta using the Applications API.",
+  "command": "curl -X POST \"${OKTA_URL}/api/v1/apps\" -H \"Authorization: SSWS ${OKTA_API_TOKEN}\" -H \"Accept: application/json\" -H \"Content-Type: application/json\" -d '{\"name\": \"oidc_client\", \"label\": \"${answer1}\", \"signOnMode\": \"OPENID_CONNECT\", \"settings\": {\"oauthClient\": {\"client_uri\": \"${answer2}\", \"redirect_uris\": [\"${answer3}\"], \"response_types\": [\"code\"], \"grant_types\": [\"authorization_code\"]}}}'",
+  "questions": [
+    "What is the label (name) for the new application?*",
+    "What is the client application URI?",
+    "What is the redirect URI for the application?*"
+  ]
+}

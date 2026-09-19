@@ -1,0 +1,9 @@
+{
+  "task_name": "List Existing Snapshots",
+  "description": "List all existing saved user snapshots, their filenames, tags, modification times, and user counts — displayed as a formatted table.",
+  "command": "python3 -c '\nimport os, glob, json, time\ndir_path = \"${answer1}\".strip() or \"snapshots\"\nos.makedirs(dir_path, exist_ok=True)\nfiles = sorted(glob.glob(os.path.join(dir_path, \"*.json\")), key=os.path.getmtime, reverse=True)\nsnapshots = []\nfor f in files:\n    try:\n        data = json.load(open(f))\n        count = len(data) if isinstance(data, list) else 0\n    except:\n        count = 0\n    tag = os.path.basename(f).replace(\"users_snapshot_\", \"\").replace(\".json\", \"\")\n    modified = time.strftime(\"%Y-%m-%d %H:%M\", time.localtime(os.path.getmtime(f)))\n    size_kb = round(os.path.getsize(f) / 1024, 1)\n    snapshots.append({\"tag\": tag, \"users\": count, \"modified\": modified, \"size_kb\": size_kb, \"file\": f})\n\n# Print as aligned table\nif snapshots:\n    hdr = f\"  {chr(9484)}{chr(9472)*22}{chr(9516)}{chr(9472)*10}{chr(9516)}{chr(9472)*17}{chr(9516)}{chr(9472)*9}{chr(9488)}\"\n    row_fmt = \"  | {:<20} | {:>8} | {:>15} | {:>7} |\"\n    sep = f\"  {chr(9500)}{chr(9472)*22}{chr(9532)}{chr(9472)*10}{chr(9532)}{chr(9472)*17}{chr(9532)}{chr(9472)*9}{chr(9508)}\"\n    end = f\"  {chr(9492)}{chr(9472)*22}{chr(9524)}{chr(9472)*10}{chr(9524)}{chr(9472)*17}{chr(9524)}{chr(9472)*9}{chr(9496)}\"\n    print(hdr)\n    print(row_fmt.format(\"Tag\", \"Users\", \"Modified\", \"Size KB\"))\n    print(sep)\n    for s in snapshots:\n        print(row_fmt.format(s[\"tag\"][:20], s[\"users\"], s[\"modified\"], s[\"size_kb\"]))\n    print(end)\nelse:\n    print(\"No snapshots found in: \" + dir_path)\n\nprint(json.dumps({\"snapshots\": snapshots, \"total_snapshots\": len(snapshots)}))\n'",
+  "auto_summarize": true,
+  "questions": [
+    "What directory should be listed? (Default: 'snapshots', press Enter to use default)"
+  ]
+}
