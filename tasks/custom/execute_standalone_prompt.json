@@ -1,0 +1,9 @@
+{
+  "task_name": "Execute Standalone Prompt",
+  "description": "Starts a standalone 2nd conversation with Gemini to process any prompt or instruction on data (e.g. summarize, display in an HTML table, format as markdown).",
+  "command": "python3 -c '\nimport sys, json, urllib.request, os\n\nprompt = sys.argv[1].strip() if len(sys.argv) > 1 else \"\"\ncontent = sys.argv[2].strip() if len(sys.argv) > 2 else \"\"\n\nif prompt in [\"undefined\", \"None\", \"null\", \"NoneType\"] or prompt.startswith(\"${\"):\n    prompt = \"\"\nif content in [\"undefined\", \"None\", \"null\", \"NoneType\"] or content.startswith(\"${\"):\n    content = \"\"\n\napi_base = os.environ.get(\"API_URL\", \"http://127.0.0.1:8000\").rstrip(\"/\")\nurls = [f\"{api_base}/prompt\", \"http://localhost:8000/prompt\"]\npayload = json.dumps({\"prompt\": prompt, \"content\": content}).encode(\"utf-8\")\n\nsuccess = False\nlast_err = \"\"\nfor url in urls:\n    try:\n        req = urllib.request.Request(url, data=payload, headers={\"Content-Type\": \"application/json\"})\n        with urllib.request.urlopen(req, timeout=30) as resp:\n            print(resp.read().decode(\"utf-8\"))\n            success = True\n            break\n    except Exception as e:\n        last_err = str(e)\n        continue\n\nif not success:\n    print(json.dumps({\"status\": \"error\", \"message\": f\"Failed to reach prompt execution endpoint: {last_err}\"}))\n' \"${answer1}\" \"${answer2}\"",
+  "questions": [
+    "What is your prompt or instruction for Gemini?*",
+    "What is the content or input data?"
+  ]
+}

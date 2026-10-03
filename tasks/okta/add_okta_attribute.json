@@ -12,7 +12,7 @@
     ],
     "questions": [
         "What is the name of the new Okta attribute?*",
-        "What is the title/label of the new Okta attribute?",
-        "What is the type of the new Okta attribute? (string/number/boolean)"
+        "What is the title/label of the new Okta attribute?*",
+        "What is the type of the new Okta attribute? (string/number/boolean)*"
     ]
 }

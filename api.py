@@ -69,6 +69,16 @@ class SaveTaskRequest(BaseModel):
     category: Optional[str] = None
     filename: Optional[str] = None
 
+class PromptRequest(BaseModel):
+    prompt: Optional[str] = None
+    content: Optional[str] = ""
+    data: Optional[str] = None
+    text: Optional[str] = None
+    instruction: Optional[str] = None
+    system_prompt: Optional[str] = None
+
+SummarizeRequest = PromptRequest
+
 @app.get("/tasks")
 def get_tasks():
     """Return all available tasks categorized in packs for the UI."""
@@ -186,6 +196,95 @@ def save_new_task(req: SaveTaskRequest):
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to write task file: {str(e)}")
+
+# ────────────────── Generic Standalone Conversation Endpoints ──────────────────
+
+@app.post("/prompt")
+@app.post("/api/prompt")
+@app.post("/summarize")
+@app.post("/api/summarize")
+def execute_standalone_prompt_endpoint(req: PromptRequest):
+    """Internal endpoint that starts a separate/standalone conversation with Gemini for any prompt (e.g. summarize, HTML table, formatting, analysis)."""
+    try:
+        user_prompt = (req.prompt or req.instruction or "").strip()
+        raw_content = (req.content or req.data or req.text or "").strip()
+        
+        if not user_prompt and not raw_content:
+            return {
+                "status": "error",
+                "message": "No prompt or content provided."
+            }
+            
+        system_instruction = req.system_prompt or (
+            "You are an expert AI task assistant and content processor. "
+            "Follow the user's instructions with high precision. "
+            "If asked to generate an HTML table, return clean, beautiful, well-styled HTML. "
+            "If asked for an email or summary, return clear, structured content. "
+            "If returning JSON, ensure it is strictly valid JSON without markdown code backticks unless requested."
+        )
+        
+        # Start a dedicated 2nd conversation with Gemini
+        convo = task_run.client.chats.create(
+            model=task_run.args.model,
+            history=[{"role": "user", "parts": [{"text": system_instruction}]}]
+        )
+        
+        if user_prompt and raw_content:
+            message_to_send = f"{user_prompt}\n\nInput Data / Content:\n{raw_content}"
+        elif user_prompt:
+            message_to_send = user_prompt
+        else:
+            message_to_send = f"Please summarize the following content into a clean subject and body:\n\n{raw_content}"
+            
+        response = convo.send_message(message_to_send)
+        resp_text = task_run.get_response_text(response).strip()
+        
+        # Check if response is JSON
+        parsed = task_run.try_parse_json(resp_text)
+        if not parsed or not isinstance(parsed, dict):
+            clean_json = re.sub(r'^```(?:json)?\s*', '', resp_text, flags=re.MULTILINE)
+            clean_json = re.sub(r'```$', '', clean_json, flags=re.MULTILINE).strip()
+            try:
+                parsed = json.loads(clean_json)
+            except Exception:
+                parsed = None
+                
+        # Extract or construct subject, body, summary, content, html
+        if isinstance(parsed, dict):
+            subject = parsed.get("subject") or parsed.get("title") or "Task Result"
+            body = parsed.get("body") or parsed.get("content") or parsed.get("summary") or resp_text
+            summary = parsed.get("summary") or body
+            html = parsed.get("html") or parsed.get("table")
+        else:
+            # Check if response contains HTML table / content
+            html_match = re.search(r'(<table[\s\S]*?</table>|<html[\s\S]*?</html>|<div[\s\S]*?</div>)', resp_text, re.IGNORECASE)
+            html = html_match.group(0) if html_match else None
+            lines = [l.strip() for l in resp_text.splitlines() if l.strip()]
+            subject = lines[0][:80] if lines else "Task Result"
+            body = resp_text
+            summary = resp_text
+
+        result_payload = {
+            "status": "success",
+            "subject": subject,
+            "body": body,
+            "summary": summary,
+            "content": body,
+            "response": resp_text
+        }
+        if html:
+            result_payload["html"] = html
+        if isinstance(parsed, dict):
+            for k, v in parsed.items():
+                if k not in result_payload:
+                    result_payload[k] = v
+                    
+        return result_payload
+    except Exception as e:
+        return {
+            "status": "error",
+            "message": f"Standalone conversation execution failed: {str(e)}"
+        }
 
 # ────────────────── Auth & Compatibility Endpoints ──────────────────
 
@@ -382,6 +481,7 @@ def chat(request: ChatRequest):
         try:
             response = convo.send_message(send_text)
             response_text = task_run.get_response_text(response)
+            print(f"\n--- DEBUG LLM RESULT ---\n{response_text}\n------------------------\n")
         except Exception as e:
             err_msg = str(e)
             if "503" in err_msg or "UNAVAILABLE" in err_msg:
@@ -533,6 +633,7 @@ def execute(request: ExecuteRequest):
                 try:
                     reply = task_run.client.chats.create(model=task_run.args.model).send_message(summary_prompt)
                     summary = task_run.get_response_text(reply).strip()
+                    print(f"\n--- DEBUG LLM SUMMARY ---\n{summary}\n-------------------------\n")
                 except Exception as sum_e:
                     summary = f"Execution finished (summary generation skipped: {str(sum_e)})"
             

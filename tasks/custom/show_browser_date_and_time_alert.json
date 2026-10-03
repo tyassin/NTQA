@@ -1,0 +1,6 @@
+{
+  "task_name": "Show Browser Date And Time Alert",
+  "description": "Generates a Node.js script or snippet that opens a browser alert box displaying the current date and time.",
+  "command": "node -e 'const time = new Date().toLocaleString(); console.log(JSON.stringify({ alertScript: `alert(\"Current Date and Time: ${time}\");` }))'",
+  "questions": []
+}

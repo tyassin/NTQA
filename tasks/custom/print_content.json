@@ -1,0 +1,8 @@
+{
+  "task_name": "Print Content",
+  "description": "Prints provided content or JSON data to the UI screen.",
+  "command": "python3 -c '\nimport sys, json\n\nargs = [a for a in sys.argv[1:] if a and a not in [\"undefined\", \"None\", \"null\", \"NoneType\"] and not a.startswith(\"${\")]\ncontent = \" \".join(args).strip() if args else \"\"\n\nif not content:\n    content = \"No content provided to display.\"\n\ntry:\n    data = json.loads(content)\n    if isinstance(data, (dict, list)):\n        print(json.dumps(data))\n    else:\n        print(json.dumps({\"content\": str(data)}))\nexcept Exception:\n    print(json.dumps({\"content\": content}))\n' \"${answer1}\"",
+  "questions": [
+    "What content do you want to print to the screen?*"
+  ]
+}

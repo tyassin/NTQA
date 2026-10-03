@@ -1,0 +1,8 @@
+{
+  "task_name": "Summarize To Content",
+  "description": "Uses a standalone Gemini conversation to summarize provided data into a professional subject/title and body.",
+  "command": "python3 -c '\nimport sys\nimport json\nimport urllib.request\nimport os\n\ndata_to_summarize = sys.argv[1] if len(sys.argv) > 1 else \"\"\napi_base = os.environ.get(\"API_URL\", \"http://127.0.0.1:8000\").rstrip(\"/\")\nurls = [f\"{api_base}/prompt\", \"http://localhost:8000/prompt\", f\"{api_base}/summarize\"]\n\npayload = json.dumps({\"prompt\": \"Summarize this content into a clean, professional subject and body\", \"content\": data_to_summarize}).encode(\"utf-8\")\n\nsuccess = False\nlast_err = \"\"\nfor url in urls:\n    try:\n        req = urllib.request.Request(url, data=payload, headers={\"Content-Type\": \"application/json\"})\n        with urllib.request.urlopen(req, timeout=30) as resp:\n            res_data = resp.read().decode(\"utf-8\")\n            print(res_data)\n            success = True\n            break\n    except Exception as e:\n        last_err = str(e)\n        continue\n\nif not success:\n    print(json.dumps({\"status\": \"error\", \"message\": f\"Failed to reach prompt endpoint: {last_err}\"}))\n' \"${answer1}\"",
+  "questions": [
+    "What data or summary should be used to generate the content?*"
+  ]
+}
