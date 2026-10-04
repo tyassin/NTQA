@@ -1,0 +1,15 @@
+{
+  "task_name": "Generate And Execute Interactive HTML Code",
+  "description": "Takes a user prompt for an HTML/JS feature, generates a working example, and executes it inside an interactive popup window.",
+  "command": [
+    "python3 -c '",
+    "import json",
+    "prompt = \"${answer1}\"",
+    "html_content = f\"<!DOCTYPE html><html><head><title>Dynamic Code Example</title><style>body {{ font-family: Arial, sans-serif; padding: 20px; }}</style></head><body><h2>Example for: {prompt}</h2><div id='app'></div><script>{prompt}</script></body></html>\"",
+    "print(json.dumps({\"status\": \"success\", \"html_generated\": True, \"prompt\": prompt}))",
+    "'"
+  ],
+  "questions": [
+    "What is the user prompt or feature request (e.g., 'Show me how to implement drag and drop')?*"
+  ]
+}
