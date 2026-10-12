@@ -3,9 +3,13 @@ import sys
 import json
 import re
 import uuid
+import time
+import logging
+from logging.handlers import RotatingFileHandler
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import RedirectResponse, FileResponse
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.middleware.base import BaseHTTPMiddleware
 from pydantic import BaseModel
 from typing import List, Dict, Any, Optional
 from dotenv import load_dotenv
@@ -21,7 +25,46 @@ sys.argv = original_argv
 
 load_dotenv()
 
+# ─── Access Logging Setup ────────────────────────────────────────────────────
+_log_dir = os.path.join(os.path.dirname(__file__), "logs")
+os.makedirs(_log_dir, exist_ok=True)
+
+access_logger = logging.getLogger("ntqa.access")
+access_logger.setLevel(logging.INFO)
+access_logger.propagate = False
+_handler = RotatingFileHandler(
+    os.path.join(_log_dir, "access.log"),
+    maxBytes=5 * 1024 * 1024,  # 5 MB per file
+    backupCount=7,
+)
+_handler.setFormatter(logging.Formatter("%(message)s"))
+access_logger.addHandler(_handler)
+# Also mirror to stdout so uvicorn terminal still shows it
+access_logger.addHandler(logging.StreamHandler(sys.stdout))
+
 app = FastAPI(title="NTQA API")
+
+
+class AccessLogMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        start = time.time()
+        response = await call_next(request)
+        duration_ms = round((time.time() - start) * 1000)
+        ip = (
+            request.headers.get("CF-Connecting-IP")       # real IP via Cloudflare tunnel
+            or request.headers.get("X-Forwarded-For", "").split(",")[0].strip()
+            or (request.client.host if request.client else "unknown")
+        )
+        ua = request.headers.get("User-Agent", "-")
+        ts = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+        access_logger.info(
+            f"{ts} {ip} \"{request.method} {request.url.path}\" "
+            f"{response.status_code} {duration_ms}ms \"{ua}\""
+        )
+        return response
+
+
+app.add_middleware(AccessLogMiddleware)
 
 app.add_middleware(
     CORSMiddleware,
@@ -638,11 +681,18 @@ def execute(request: ExecuteRequest):
                     summary = f"Execution finished (summary generation skipped: {str(sum_e)})"
             
             # Persist to SQLite
+            task_status = "success"
+            if result.returncode != 0:
+                task_status = "error"
+            elif 'parsed_output' in locals() and parsed_output and isinstance(parsed_output, dict):
+                if "errorCode" in parsed_output or "error" in parsed_output or "errorSummary" in parsed_output:
+                    task_status = "error"
+
             ntqa_db.add_task_run(
                 convo_id=session_id,
                 task_name=task_name,
                 command=command,
-                status="error" if error and not output else "success",
+                status=task_status,
                 output=output,
                 error=error,
                 summary=summary
@@ -654,9 +704,13 @@ def execute(request: ExecuteRequest):
                 "output": output,
                 "error": error,
                 "summary": summary,
-                "status": "error" if error and not output else "success"
+                "status": task_status
             })
             
+            # If the task failed, stop executing subsequent tasks
+            if task_status == "error":
+                break
+                
             # If pause is true and there are more tasks, stop for UI pause
             if request.pause and task_info != request.tasks[-1]:
                 return {"status": "paused", "results": results, "execution_context": execution_context, "session_id": session_id}
@@ -677,12 +731,16 @@ def execute(request: ExecuteRequest):
                 "error": str(e),
                 "status": "error"
             })
+            break
 
     # Add machine execution summary message to conversation
+    has_failures = any(r.get("status") == "error" for r in results)
+    content_msg = f"Execution stopped because a task failed. Please review the logs and try again." if has_failures else f"Execution completed for {len(results)} task(s)."
+    
     ntqa_db.add_message(
         convo_id=session_id,
         role="assistant",
-        content=f"Execution completed for {len(results)} task(s).",
+        content=content_msg,
         msg_type="task_execution",
         meta={"results": results}
     )

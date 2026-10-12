@@ -1,0 +1,6 @@
+{
+  "task_name": "Get Current Chrome Version",
+  "description": "Retrieves the currently installed version of Google Chrome on the local system.",
+  "command": "python3 -c '\nimport subprocess, json, platform\nsystem = platform.system()\nif system == \"Linux\":\n    cmd = [\"google-chrome\", \"--version\"]\nelif system == \"Darwin\":\n    cmd = [\"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome\", \"--version\"]\nelse:\n    cmd = [\"reg\", \"query\", \"HKCU\\\\Software\\\\Google\\\\Chrome\\\\BLBeacon\", \"/v\", \"version\"]\nres = subprocess.run(cmd, capture_output=True, text=True)\nprint(json.dumps({\"version\": res.stdout.strip()}))\n'",
+  "questions": []
+}
