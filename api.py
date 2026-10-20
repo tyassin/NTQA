@@ -6,8 +6,9 @@ import uuid
 import time
 import logging
 from logging.handlers import RotatingFileHandler
+import asyncio
 from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import RedirectResponse, FileResponse
+from fastapi.responses import RedirectResponse, FileResponse, StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
 from pydantic import BaseModel
@@ -568,6 +569,154 @@ def chat(request: ChatRequest):
             "parsed": parsed
         }
 
+def run_single_task(task_idx: int, task_info: Dict[str, Any], execution_context: Dict[str, Any], session_id: str) -> Dict[str, Any]:
+    task_name = task_info.get("task")
+    data = task_info.get("data", {})
+    
+    task_config = tm.get_task_by_name(task_name)
+    command_template = task_config.get("command") if task_config else None
+
+    if command_template:
+        if isinstance(command_template, list):
+            command_template = "\n".join(command_template)
+            
+        command = command_template
+        if task_config:
+            questions = task_config.get("questions", [])
+            for i, q in enumerate(questions):
+                ans = data.get(q, "")
+                command = command.replace(f"${{answer{i+1}}}", str(ans))
+                command = command.replace(f"${{{q}}}", str(ans))
+                
+        matches = re.findall(r'\$\{([^}]+)\}', command)
+        for match in matches:
+            if '.' in match:
+                ref_task, ref_key = match.split('.', 1)
+                matched_val = None
+                if ref_task in execution_context and isinstance(execution_context[ref_task], dict):
+                    matched_val = execution_context[ref_task].get(ref_key, "")
+                else:
+                    for ctx_name, ctx_dict in execution_context.items():
+                        if isinstance(ctx_dict, dict) and (ref_task.lower() in ctx_name.lower() or ctx_name.lower() in ref_task.lower()):
+                            matched_val = ctx_dict.get(ref_key, "")
+                            break
+                if matched_val is not None:
+                    command = command.replace(f"${{{match}}}", str(matched_val))
+        
+        if "${" not in command_template:
+            import shlex
+            json_data_str = json.dumps(data)
+            command = f"{command_template} {shlex.quote(json_data_str)}"
+            
+        cmd_args = []
+    else:
+        cmd_list = list(data.values())
+        if not cmd_list:
+            return {"task": task_name, "error": "No command to run.", "status": "error"}
+        command = cmd_list[0]
+        cmd_args = cmd_list[1:]
+
+    try:
+        import subprocess
+        if command_template:
+            result = subprocess.run(command, capture_output=True, shell=True, text=True)
+        else:
+            result = subprocess.run([command] + cmd_args, capture_output=True, shell=True, text=True)
+        print(f"result for task {task_name} (#{task_idx + 1}): {result}")
+        output = result.stdout.strip()
+        error = result.stderr.strip()
+        
+        if output:
+            parsed_output = None
+            try:
+                parsed_output = json.loads(output)
+            except json.JSONDecodeError:
+                for line in reversed(output.splitlines()):
+                    line_s = line.strip()
+                    if line_s.startswith("{") and line_s.endswith("}"):
+                        try:
+                            parsed_output = json.loads(line_s)
+                            break
+                        except Exception:
+                            pass
+            if parsed_output and isinstance(parsed_output, dict):
+                execution_context[task_name] = parsed_output
+                execution_context[task_name.lower()] = parsed_output
+        
+        # If auto_summarize is true, summarize with Gemini
+        auto_summarize = task_config.get("auto_summarize", False) if task_config else False
+        summary = None
+        if auto_summarize and output:
+            summary_prompt = (
+                f"The following is the output of a task called '{task_name}':\n\n{output}"
+            )
+            if error:
+                summary_prompt += f"\n\nErrors encountered:\n{error}"
+            summary_prompt += (
+                "\n\nProvide a concise, plain-text summary of this result."
+                "\nFormatting rules — follow strictly:"
+                "\n- Use plain newlines to separate items, NOT markdown bold (**text**), NOT bullet symbols (* or -), NOT numbered lists."
+                "\n- Use a single colon after a label, like: 'Status: Success' or 'Users recreated: 1'"
+                "\n- Each distinct piece of information goes on its own line."
+                "\n- No headers, no markdown syntax of any kind."
+                "\nExample good output:"
+                "\nStatus: Completed successfully"
+                "\nSnapshot used: snapshots/users_snapshot_before.json"
+                "\nUsers recreated: 1"
+                "\nUsers updated: 0"
+                "\nUsers skipped: 188"
+            )
+            try:
+                reply = task_run.client.chats.create(model=task_run.args.model).send_message(summary_prompt)
+                summary = task_run.get_response_text(reply).strip()
+                print(f"\n--- DEBUG LLM SUMMARY ---\n{summary}\n-------------------------\n")
+            except Exception as sum_e:
+                summary = f"Execution finished (summary generation skipped: {str(sum_e)})"
+        
+        # Determine status
+        task_status = "success"
+        if result.returncode != 0:
+            task_status = "error"
+        elif 'parsed_output' in locals() and parsed_output and isinstance(parsed_output, dict):
+            if "errorCode" in parsed_output or "error" in parsed_output or "errorSummary" in parsed_output:
+                task_status = "error"
+
+        ntqa_db.add_task_run(
+            convo_id=session_id,
+            task_name=task_name,
+            command=command,
+            status=task_status,
+            output=output,
+            error=error,
+            summary=summary
+        )
+        
+        return {
+            "task": task_name,
+            "command": command,
+            "output": output,
+            "error": error,
+            "summary": summary,
+            "status": task_status
+        }
+    except Exception as e:
+        ntqa_db.add_task_run(
+            convo_id=session_id,
+            task_name=task_name,
+            command=command if 'command' in locals() else "unknown",
+            status="error",
+            output="",
+            error=str(e),
+            summary=None
+        )
+        return {
+            "task": task_name,
+            "command": command if 'command' in locals() else "",
+            "output": "",
+            "error": str(e),
+            "status": "error"
+        }
+
 @app.post("/execute")
 def execute(request: ExecuteRequest):
     execution_context = {}
@@ -575,165 +724,17 @@ def execute(request: ExecuteRequest):
     session_id = request.session_id or str(uuid.uuid4())
     
     for task_idx, task_info in enumerate(request.tasks):
-        task_name = task_info.get("task")
-        data = task_info.get("data", {})
+        task_res = run_single_task(task_idx, task_info, execution_context, session_id)
+        results.append(task_res)
         
-        task_config = tm.get_task_by_name(task_name)
-        command_template = task_config.get("command") if task_config else None
-
-        if command_template:
-            if isinstance(command_template, list):
-                command_template = "\n".join(command_template)
-                
-            command = command_template
-            if task_config:
-                questions = task_config.get("questions", [])
-                for i, q in enumerate(questions):
-                    ans = data.get(q, "")
-                    command = command.replace(f"${{answer{i+1}}}", str(ans))
-                    command = command.replace(f"${{{q}}}", str(ans))
-                    
-            import re
-            matches = re.findall(r'\$\{([^}]+)\}', command)
-            for match in matches:
-                if '.' in match:
-                    ref_task, ref_key = match.split('.', 1)
-                    matched_val = None
-                    if ref_task in execution_context and isinstance(execution_context[ref_task], dict):
-                        matched_val = execution_context[ref_task].get(ref_key, "")
-                    else:
-                        for ctx_name, ctx_dict in execution_context.items():
-                            if isinstance(ctx_dict, dict) and (ref_task.lower() in ctx_name.lower() or ctx_name.lower() in ref_task.lower()):
-                                matched_val = ctx_dict.get(ref_key, "")
-                                break
-                    if matched_val is not None:
-                        command = command.replace(f"${{{match}}}", str(matched_val))
-            
-            if "${" not in command_template:
-                import shlex
-                json_data_str = json.dumps(data)
-                command = f"{command_template} {shlex.quote(json_data_str)}"
-                
-            cmd_args = []
-        else:
-            cmd_list = list(data.values())
-            if not cmd_list:
-                results.append({"task": task_name, "error": "No command to run."})
-                continue
-            command = cmd_list[0]
-            cmd_args = cmd_list[1:]
-
-        try:
-            import subprocess
-            if command_template:
-                result = subprocess.run(command, capture_output=True, shell=True, text=True)
-            else:
-                result = subprocess.run([command] + cmd_args, capture_output=True, shell=True, text=True)
-            print(f"result for task {task_name} (#{task_idx + 1}): {result}")
-            output = result.stdout.strip()
-            error = result.stderr.strip()
-            
-            if output:
-                parsed_output = None
-                try:
-                    parsed_output = json.loads(output)
-                except json.JSONDecodeError:
-                    for line in reversed(output.splitlines()):
-                        line_s = line.strip()
-                        if line_s.startswith("{") and line_s.endswith("}"):
-                            try:
-                                parsed_output = json.loads(line_s)
-                                break
-                            except Exception:
-                                pass
-                if parsed_output and isinstance(parsed_output, dict):
-                    execution_context[task_name] = parsed_output
-                    execution_context[task_name.lower()] = parsed_output
-            
-            # If auto_summarize is true, summarize with Gemini
-            auto_summarize = task_config.get("auto_summarize", False) if task_config else False
-            summary = None
-            if auto_summarize and output:
-                summary_prompt = (
-                    f"The following is the output of a task called '{task_name}':\n\n{output}"
-                )
-                if error:
-                    summary_prompt += f"\n\nErrors encountered:\n{error}"
-                summary_prompt += (
-                    "\n\nProvide a concise, plain-text summary of this result."
-                    "\nFormatting rules — follow strictly:"
-                    "\n- Use plain newlines to separate items, NOT markdown bold (**text**), NOT bullet symbols (* or -), NOT numbered lists."
-                    "\n- Use a single colon after a label, like: 'Status: Success' or 'Users recreated: 1'"
-                    "\n- Each distinct piece of information goes on its own line."
-                    "\n- No headers, no markdown syntax of any kind."
-                    "\nExample good output:"
-                    "\nStatus: Completed successfully"
-                    "\nSnapshot used: snapshots/users_snapshot_before.json"
-                    "\nUsers recreated: 1"
-                    "\nUsers updated: 0"
-                    "\nUsers skipped: 188"
-                )
-                try:
-                    reply = task_run.client.chats.create(model=task_run.args.model).send_message(summary_prompt)
-                    summary = task_run.get_response_text(reply).strip()
-                    print(f"\n--- DEBUG LLM SUMMARY ---\n{summary}\n-------------------------\n")
-                except Exception as sum_e:
-                    summary = f"Execution finished (summary generation skipped: {str(sum_e)})"
-            
-            # Persist to SQLite
-            task_status = "success"
-            if result.returncode != 0:
-                task_status = "error"
-            elif 'parsed_output' in locals() and parsed_output and isinstance(parsed_output, dict):
-                if "errorCode" in parsed_output or "error" in parsed_output or "errorSummary" in parsed_output:
-                    task_status = "error"
-
-            ntqa_db.add_task_run(
-                convo_id=session_id,
-                task_name=task_name,
-                command=command,
-                status=task_status,
-                output=output,
-                error=error,
-                summary=summary
-            )
-            
-            results.append({
-                "task": task_name,
-                "command": command,
-                "output": output,
-                "error": error,
-                "summary": summary,
-                "status": task_status
-            })
-            
-            # If the task failed, stop executing subsequent tasks
-            if task_status == "error":
-                break
-                
-            # If pause is true and there are more tasks, stop for UI pause
-            if request.pause and task_info != request.tasks[-1]:
-                return {"status": "paused", "results": results, "execution_context": execution_context, "session_id": session_id}
-            
-        except Exception as e:
-            ntqa_db.add_task_run(
-                convo_id=session_id,
-                task_name=task_name,
-                command=command if 'command' in locals() else "unknown",
-                status="error",
-                output="",
-                error=str(e),
-                summary=None
-            )
-            results.append({
-                "task": task_name,
-                "command": command if 'command' in locals() else "",
-                "error": str(e),
-                "status": "error"
-            })
+        # Stop on failure
+        if task_res.get("status") == "error":
             break
+            
+        # Pause handling
+        if request.pause and task_info != request.tasks[-1]:
+            return {"status": "paused", "results": results, "execution_context": execution_context, "session_id": session_id}
 
-    # Add machine execution summary message to conversation
     has_failures = any(r.get("status") == "error" for r in results)
     content_msg = f"Execution stopped because a task failed. Please review the logs and try again." if has_failures else f"Execution completed for {len(results)} task(s)."
     
@@ -742,14 +743,83 @@ def execute(request: ExecuteRequest):
         role="assistant",
         content=content_msg,
         msg_type="task_execution",
-        meta={"results": results}
+        meta={"tasks": request.tasks, "results": results}
     )
 
     return {"status": "success", "results": results, "session_id": session_id}
 
+@app.post("/execute_stream")
+async def execute_stream(request: ExecuteRequest):
+    session_id = request.session_id or str(uuid.uuid4())
+
+    async def event_generator():
+        execution_context = {}
+        results = []
+        
+        for task_idx, task_info in enumerate(request.tasks):
+            task_name = task_info.get("task", f"Task {task_idx + 1}")
+            
+            # Emit task_start event
+            start_payload = {
+                "type": "task_start",
+                "task_index": task_idx,
+                "task_name": task_name
+            }
+            yield f"data: {json.dumps(start_payload)}\n\n"
+            
+            # Execute task in background thread
+            task_res = await asyncio.to_thread(
+                run_single_task, task_idx, task_info, execution_context, session_id
+            )
+            results.append(task_res)
+            
+            # Emit task_result event
+            result_payload = {
+                "type": "task_result",
+                "task_index": task_idx,
+                "result": task_res
+            }
+            yield f"data: {json.dumps(result_payload)}\n\n"
+            
+            if task_res.get("status") == "error":
+                break
+                
+            if request.pause and task_info != request.tasks[-1]:
+                yield f"data: {json.dumps({'type': 'paused', 'task_index': task_idx})}\n\n"
+                break
+        
+        has_failures = any(r.get("status") == "error" for r in results)
+        content_msg = f"Execution stopped because a task failed. Please review the logs and try again." if has_failures else f"Execution completed for {len(results)} task(s)."
+        
+        ntqa_db.add_message(
+            convo_id=session_id,
+            role="assistant",
+            content=content_msg,
+            msg_type="task_execution",
+            meta={"tasks": request.tasks, "results": results}
+        )
+        
+        complete_payload = {
+            "type": "complete",
+            "status": "error" if has_failures else "success",
+            "results": results,
+            "session_id": session_id
+        }
+        yield f"data: {json.dumps(complete_payload)}\n\n"
+
+    return StreamingResponse(
+        event_generator(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "X-Accel-Buffering": "no"
+        }
+    )
+
 # Serve built frontend static files if present
 from fastapi.staticfiles import StaticFiles
-if os.path.exists("static"):
+if os.path.exists("static") and os.path.exists("static/index.html"):
     app.mount("/", StaticFiles(directory="static", html=True), name="static")
 elif os.path.exists("../runningly-chat-web/dist"):
     app.mount("/", StaticFiles(directory="../runningly-chat-web/dist", html=True), name="static")

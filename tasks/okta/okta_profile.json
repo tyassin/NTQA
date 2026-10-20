@@ -7,7 +7,7 @@
     "  -H \"Accept: application/json\" \\",
     "  -H \"Content-Type: application/json\" \\",
     "  -H \"Authorization: SSWS $OKTA_API_TOKEN\" \\",
-    "  -d '{\"profile\": {\"firstName\": \"${answer1}\", \"lastName\": \"${answer2}\", \"email\": \"${answer3}\", \"title\": \"${answer4}\", \"login\": \"${answer5}\"}, \"credentials\": {\"password\": {\"value\": \"TempPass123!\"}}}' \\",
+    "  -d '{\"profile\": {\"firstName\": \"${answer1}\", \"lastName\": \"${answer2}\", \"email\": \"${answer3}\", \"title\": \"${answer4}\", \"login\": \"${answer5}\", \"streetAddress\": \"${answer6}\", \"city\": \"${answer7}\", \"state\": \"${answer8}\", \"zipCode\": \"${answer9}\"}, \"credentials\": {\"password\": {\"value\": \"TempPass123!\"}}}' \\",
     "  \"$OKTA_URL/api/v1/users?activate=true\""
   ],
   "questions": [
@@ -15,6 +15,10 @@
     "What is the new okta user's last name?*",
     "What is the new okta user's email?*",
     "What is the user's job title?",
-    "What's the user's username?*"
+    "What's the user's username?*",
+    "What is the street name?",
+    "What is the city?",
+    "What is the state?",
+    "What is the zipCode?"
   ]
 }

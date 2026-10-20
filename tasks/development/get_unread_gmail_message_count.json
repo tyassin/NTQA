@@ -1,0 +1,8 @@
+{
+  "task_name": "Get Unread Gmail Message Count",
+  "description": "Reads the user's Gmail inbox and returns the total number of unread messages using the Gmail API.",
+  "command": "python3 -c '\nimport os, json, urllib.request\ntoken = os.environ.get(\"GMAIL_ACCESS_TOKEN\")\nurl = \"https://gmail.googleapis.com/gmail/v1/users/${answer1}/messages?q=is:unread\"\nreq = urllib.request.Request(url, headers={\"Authorization\": f\"Bearer {token}\"})\ntry:\n    with urllib.request.urlopen(req) as response:\n        data = json.loads(response.read().decode())\n        messages = data.get(\"messages\", [])\n        print(json.dumps({\"unread_count\": len(messages)}))\nexcept Exception as e:\n    print(json.dumps({\"error\": str(e), \"unread_count\": 0}))\n'",
+  "questions": [
+    "What is the Gmail user email address or profile ID?*"
+  ]
+}

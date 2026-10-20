@@ -1,0 +1,8 @@
+{
+  "task_name": "Delete Okta Group",
+  "description": "Deletes an Okta group by its group ID using the Okta Groups API.",
+  "command": "curl -s -X DELETE \"${OKTA_URL}/api/v1/groups/${answer1}\" -H \"Authorization: SSWS ${OKTA_API_TOKEN}\" -H \"Accept: application/json\" -H \"Content-Type: application/json\"",
+  "questions": [
+    "What is the Okta group ID to delete?*"
+  ]
+}
