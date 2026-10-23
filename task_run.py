@@ -82,11 +82,30 @@ class TaskManager:
         return question
 
     def get_required_keys(self, task):
-        return [k for k, q in task["key_map"].items() if q.strip().endswith("*")]
+        key_map = task.get("key_map") or {self.clean_key(q): q for q in task.get("questions", [])}
+        return [k for k, q in key_map.items() if q.strip().endswith("*")]
 
     def get_task_by_name(self, name):
         for t in self.tasks:
             if t["task_name"].lower() in name.lower():
+                if "file_path" in t:
+                    full_p = os.path.join(TASK_FOLDER, t["file_path"])
+                    if os.path.exists(full_p):
+                        try:
+                            with open(full_p, "r", encoding="utf-8") as f:
+                                fresh = json.load(f)
+                                fresh["category"] = t.get("category", "")
+                                fresh["file_path"] = t["file_path"]
+                                fresh["questions"] = fresh.get("questions", t.get("questions", []))
+                                fresh["output_schema"] = fresh.get("output_schema", {
+                                    self.clean_key(q): "" for q in fresh["questions"]
+                                })
+                                fresh["key_map"] = {
+                                    self.clean_key(q): q for q in fresh["questions"]
+                                }
+                                return fresh
+                        except Exception:
+                            pass
                 return t
         return None
 
@@ -105,8 +124,12 @@ class TaskManager:
             "  * Automatically identify all required tasks in the chain.\n"
             "  * Extract snapshot tags/names from the prompt (e.g. 'before' and 'after') for 'Compare Users Snapshots to Excel'.\n"
             "  * For 'Zip Files', set the files question to '${Compare Users Snapshots to Excel.all_files}' (or '${Compare Users Snapshots to Excel.diff_file}') and the output archive name to the requested zip name (e.g. 'final.zip').\n"
-            "  * For 'Download File to Browser', set the file question to '${Zip Files.archive_path}' (or the archive filename).\n"
+            "  * For 'Download File to Browser', set the file question to '${Zip Files.archive_path}' if 'Zip Files' is in the pipeline, or '${Compare Users Snapshots to Excel.diff_file}' when downloading the diff report directly.\n"
             "- If the user prompt specifies an attribute name such as ('weather') or ('note'), that attribute is the exact name in a reference task's output (e.g., '${Get Weather in Period.weather}', '${Get Weather in Period.note}', or '${Select Group By Name.id}'), automatically fill in that reference as the answer instead of asking the user.\n"
+            "- GROUP USERS PIPELINE & FOR-LOOPS: When a user prompt requests finding, selecting, and performing an action on members of a group (e.g. 'find all users in group X and delete them'):\n"
+            "  * First identify 'Select Users in Group' to retrieve the group's members.\n"
+            "  * Then chain 'Delete Okta User' (or subsequent action). In the workflow, specify the downstream task with its question set to '${Select Users in Group.user_ids}' (or '${Select Users in Group.user_logins}'), or with '\"for_each\": \"${Select Users in Group.user_ids}\"' and question set to '\"${item}\"'.\n"
+            "  * The workflow execution engine automatically executes the downstream action in a for-loop for every user ID/item returned by the upstream task.\n"
             "- MULTI-ENTITY ORDERING: When adding a user to multiple groups (or processing multiple items), you must interleave each lookup and action immediately: (1) Select Group A -> (2) Assign User to Group A -> (3) Select Group B -> (4) Assign User to Group B. Never batch all group lookups first because variable reference ${Select Group By Name.id} will be overwritten.\n"
             "- If tasks are repeated is such a way find or select and then create or update or assing, run the select/find task first and then the create/update/assign task after the select/find task since the data is related and IDs maybe overwritten in the memory due to the previous task's output.(e.g. find user and then update user, or find group and then add or assign user to group)\n"
             "- If all required questions for all identified tasks are answered (either directly from user input or via ${TaskName.field} references), return a JSON list of completed tasks:\n"
@@ -235,10 +258,15 @@ def check_completed(parsed, tm):
                 if k not in canonical_data and v is not None and str(v).strip():
                     canonical_data[k] = v
             
-            normalized_tasks.append({
+            task_entry = {
                 "task": task["task_name"],
                 "data": canonical_data
-            })
+            }
+            if "for_each" in t_parsed:
+                task_entry["for_each"] = t_parsed["for_each"]
+            if "loop" in t_parsed:
+                task_entry["loop"] = t_parsed["loop"]
+            normalized_tasks.append(task_entry)
         return True, normalized_tasks
     return False, None
 

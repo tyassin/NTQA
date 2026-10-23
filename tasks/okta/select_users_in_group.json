@@ -1,0 +1,16 @@
+{
+  "task_name": "Select Users in Group",
+  "description": "Find an Okta group by name or ID and return all its member users and IDs for downstream tasks.",
+  "command": "python3 -c '\nimport urllib.request\nimport urllib.parse\nimport json\nimport os\nimport sys\n\ngroup_query = \"\"\"${answer1}\"\"\".strip()\nokta_url = os.environ.get(\"OKTA_URL\", \"\").rstrip(\"/\")\ntoken = os.environ.get(\"OKTA_API_TOKEN\", \"\").strip()\n\nif not okta_url or not token:\n    print(json.dumps({\"error\": \"OKTA_URL and OKTA_API_TOKEN must be set\"}))\n    sys.exit(1)\n\nheaders = {\n    \"Authorization\": f\"SSWS {token}\",\n    \"Accept\": \"application/json\",\n    \"Content-Type\": \"application/json\"\n}\n\ngroup_id = None\ngroup_name = group_query\n\nif group_query.startswith(\"00g\") and len(group_query) >= 18:\n    group_id = group_query\nelse:\n    encoded = urllib.parse.quote(group_query)\n    search_url = f\"{okta_url}/api/v1/groups?q={encoded}\"\n    req = urllib.request.Request(search_url, headers=headers)\n    try:\n        with urllib.request.urlopen(req) as resp:\n            groups = json.loads(resp.read().decode())\n            match = next((g for g in groups if g.get(\"profile\", {}).get(\"name\", \"\").lower() == group_query.lower()), None)\n            if not match and groups:\n                match = groups[0]\n            if match:\n                group_id = match[\"id\"]\n                group_name = match.get(\"profile\", {}).get(\"name\", group_query)\n    except Exception as e:\n        print(json.dumps({\"error\": f\"Failed to search group: {e}\"}))\n        sys.exit(1)\n\nif not group_id:\n    print(json.dumps({\"error\": f\"Group not found: {group_query}\", \"count\": 0, \"user_ids\": [], \"user_logins\": [], \"users\": []}))\n    sys.exit(0)\n\nusers_url = f\"{okta_url}/api/v1/groups/{group_id}/users\"\nreq = urllib.request.Request(users_url, headers=headers)\ntry:\n    with urllib.request.urlopen(req) as resp:\n        users_data = json.loads(resp.read().decode())\n        user_ids = [u.get(\"id\") for u in users_data if u.get(\"id\")]\n        user_logins = [u.get(\"profile\", {}).get(\"login\") for u in users_data if u.get(\"profile\", {}).get(\"login\")]\n        users_list = [\n            {\n                \"id\": u.get(\"id\"),\n                \"login\": u.get(\"profile\", {}).get(\"login\", \"\"),\n                \"email\": u.get(\"profile\", {}).get(\"email\", \"\"),\n                \"firstName\": u.get(\"profile\", {}).get(\"firstName\", \"\"),\n                \"lastName\": u.get(\"profile\", {}).get(\"lastName\", \"\")\n            }\n            for u in users_data\n        ]\n        result = {\n            \"group_id\": group_id,\n            \"group_name\": group_name,\n            \"count\": len(user_ids),\n            \"user_ids\": user_ids,\n            \"user_logins\": user_logins,\n            \"users\": users_list\n        }\n        print(json.dumps(result))\nexcept Exception as e:\n    print(json.dumps({\"error\": f\"Failed to fetch group users: {e}\"}))\n    sys.exit(1)\n'",
+  "questions": [
+    "What is the name or ID of the Okta group to find users in?*"
+  ],
+  "output_schema": {
+    "group_id": "",
+    "group_name": "",
+    "count": 0,
+    "user_ids": [],
+    "user_logins": [],
+    "users": []
+  }
+}

@@ -569,8 +569,91 @@ def chat(request: ChatRequest):
             "parsed": parsed
         }
 
+def resolve_context_reference(expr: str, execution_context: Dict[str, Any]) -> Any:
+    """
+    Resolve a reference expression like '${Select Users in Group.user_ids}'
+    against execution_context. Returns the resolved value (which can be a list, dict, or str),
+    or None if not found.
+    """
+    if not isinstance(expr, str):
+        return None
+    match = re.search(r'\$\{([^}]+)\}', expr)
+    if not match:
+        return None
+    ref_body = match.group(1).strip()
+    if '.' not in ref_body:
+        return None
+    ref_task, ref_key = ref_body.split('.', 1)
+    ref_task_clean = ref_task.strip().lower()
+    ref_key_clean = ref_key.strip()
+
+    matched_dict = None
+    for ctx_name, ctx_val in execution_context.items():
+        if isinstance(ctx_val, dict):
+            if ctx_name.lower() == ref_task_clean or ref_task_clean in ctx_name.lower() or ctx_name.lower() in ref_task_clean:
+                matched_dict = ctx_val
+                break
+
+    if matched_dict is not None and ref_key_clean in matched_dict:
+        return matched_dict[ref_key_clean]
+    return None
+
+def get_loop_context(task_info: Dict[str, Any], execution_context: Dict[str, Any]):
+    """
+    Detect if task_info explicitly specifies a loop over an array of items via 'for_each' or 'loop'.
+    Returns (loop_items: list, for_each_ref: str) or (None, None).
+    """
+    for_each_expr = task_info.get("for_each") or task_info.get("loop")
+    if not for_each_expr:
+        return None, None
+
+    if isinstance(for_each_expr, str) and "${" in for_each_expr:
+        val = resolve_context_reference(for_each_expr, execution_context)
+        if isinstance(val, list):
+            return val, for_each_expr
+    elif isinstance(for_each_expr, list):
+        return for_each_expr, "explicit_list"
+
+    return None, None
+
+def build_iteration_data(data: Dict[str, Any], item: Any, for_each_ref: Optional[str]) -> Dict[str, Any]:
+    """
+    Construct data dict for a single iteration of a loop over 'item'.
+    Substitutes ${item}, ${item.id}, or the for_each_ref string with the item's value.
+    """
+    new_data = {}
+    if not isinstance(data, dict):
+        return new_data
+
+    item_str = ""
+    if isinstance(item, dict):
+        item_str = str(item.get("id") or item.get("login") or item.get("email") or json.dumps(item))
+    else:
+        item_str = str(item)
+
+    for k, v in data.items():
+        if not isinstance(v, str):
+            new_data[k] = v
+            continue
+
+        val_str = v
+        val_str = val_str.replace("${item}", item_str)
+        val_str = val_str.replace("$item", item_str)
+
+        if isinstance(item, dict):
+            for prop_match in re.findall(r'\$\{item\.([^}]+)\}', val_str):
+                val_str = val_str.replace(f"${{item.{prop_match}}}", str(item.get(prop_match, "")))
+
+        if for_each_ref and for_each_ref in val_str:
+            val_str = val_str.replace(for_each_ref, item_str)
+
+        new_data[k] = val_str
+
+    return new_data
+
 def run_single_task(task_idx: int, task_info: Dict[str, Any], execution_context: Dict[str, Any], session_id: str) -> Dict[str, Any]:
-    task_name = task_info.get("task")
+    task_name = task_info.get("real_task_name") or task_info.get("task")
+    display_title = task_info.get("task")
     data = task_info.get("data", {})
     
     task_config = tm.get_task_by_name(task_name)
@@ -601,7 +684,15 @@ def run_single_task(task_idx: int, task_info: Dict[str, Any], execution_context:
                             matched_val = ctx_dict.get(ref_key, "")
                             break
                 if matched_val is not None:
-                    command = command.replace(f"${{{match}}}", str(matched_val))
+                    if isinstance(matched_val, (dict, list)):
+                        val_str = json.dumps(matched_val)
+                    else:
+                        val_str = str(matched_val)
+                    if f'"{match}"' in command or f'"${{{match}}}"' in command:
+                        val_str_escaped = val_str.replace('\\', '\\\\').replace('"', '\\"')
+                        command = command.replace(f"${{{match}}}", val_str_escaped)
+                    else:
+                        command = command.replace(f"${{{match}}}", val_str)
         
         if "${" not in command_template:
             import shlex
@@ -612,7 +703,7 @@ def run_single_task(task_idx: int, task_info: Dict[str, Any], execution_context:
     else:
         cmd_list = list(data.values())
         if not cmd_list:
-            return {"task": task_name, "error": "No command to run.", "status": "error"}
+            return {"task": display_title, "error": "No command to run.", "status": "error"}
         command = cmd_list[0]
         cmd_args = cmd_list[1:]
 
@@ -622,7 +713,7 @@ def run_single_task(task_idx: int, task_info: Dict[str, Any], execution_context:
             result = subprocess.run(command, capture_output=True, shell=True, text=True)
         else:
             result = subprocess.run([command] + cmd_args, capture_output=True, shell=True, text=True)
-        print(f"result for task {task_name} (#{task_idx + 1}): {result}")
+        print(f"result for task {display_title} (#{task_idx + 1}): {result}")
         output = result.stdout.strip()
         error = result.stderr.strip()
         
@@ -683,7 +774,7 @@ def run_single_task(task_idx: int, task_info: Dict[str, Any], execution_context:
 
         ntqa_db.add_task_run(
             convo_id=session_id,
-            task_name=task_name,
+            task_name=display_title,
             command=command,
             status=task_status,
             output=output,
@@ -692,7 +783,8 @@ def run_single_task(task_idx: int, task_info: Dict[str, Any], execution_context:
         )
         
         return {
-            "task": task_name,
+            "task": display_title,
+            "real_task_name": task_name,
             "command": command,
             "output": output,
             "error": error,
@@ -702,7 +794,7 @@ def run_single_task(task_idx: int, task_info: Dict[str, Any], execution_context:
     except Exception as e:
         ntqa_db.add_task_run(
             convo_id=session_id,
-            task_name=task_name,
+            task_name=display_title,
             command=command if 'command' in locals() else "unknown",
             status="error",
             output="",
@@ -710,7 +802,8 @@ def run_single_task(task_idx: int, task_info: Dict[str, Any], execution_context:
             summary=None
         )
         return {
-            "task": task_name,
+            "task": display_title,
+            "real_task_name": task_name,
             "command": command if 'command' in locals() else "",
             "output": "",
             "error": str(e),
@@ -724,16 +817,48 @@ def execute(request: ExecuteRequest):
     session_id = request.session_id or str(uuid.uuid4())
     
     for task_idx, task_info in enumerate(request.tasks):
-        task_res = run_single_task(task_idx, task_info, execution_context, session_id)
-        results.append(task_res)
-        
-        # Stop on failure
-        if task_res.get("status") == "error":
-            break
+        loop_items, for_each_ref = get_loop_context(task_info, execution_context)
+        if loop_items is not None:
+            base_name = task_info.get("task")
+            if len(loop_items) == 0:
+                skip_res = {
+                    "task": f"{base_name} (0 items)",
+                    "real_task_name": base_name,
+                    "command": "noop",
+                    "output": json.dumps({"status": "skipped", "message": f"0 items found in {for_each_ref}"}),
+                    "error": "",
+                    "summary": "Loop skipped: 0 items returned from upstream task.",
+                    "status": "success"
+                }
+                results.append(skip_res)
+                continue
+
+            loop_failed = False
+            for i, item in enumerate(loop_items):
+                item_label = item.get("login") or item.get("id") if isinstance(item, dict) else str(item)
+                iter_task_info = {
+                    "task": f"{base_name} [{i+1}/{len(loop_items)}: {item_label}]",
+                    "real_task_name": base_name,
+                    "data": build_iteration_data(task_info.get("data", {}), item, for_each_ref)
+                }
+                iter_res = run_single_task(task_idx, iter_task_info, execution_context, session_id)
+                results.append(iter_res)
+                if iter_res.get("status") == "error":
+                    loop_failed = True
+                    break
+            if loop_failed:
+                break
+        else:
+            task_res = run_single_task(task_idx, task_info, execution_context, session_id)
+            results.append(task_res)
             
-        # Pause handling
-        if request.pause and task_info != request.tasks[-1]:
-            return {"status": "paused", "results": results, "execution_context": execution_context, "session_id": session_id}
+            # Stop on failure
+            if task_res.get("status") == "error":
+                break
+                
+            # Pause handling
+            if request.pause and task_info != request.tasks[-1]:
+                return {"status": "paused", "results": results, "execution_context": execution_context, "session_id": session_id}
 
     has_failures = any(r.get("status") == "error" for r in results)
     content_msg = f"Execution stopped because a task failed. Please review the logs and try again." if has_failures else f"Execution completed for {len(results)} task(s)."
@@ -758,35 +883,123 @@ async def execute_stream(request: ExecuteRequest):
         
         for task_idx, task_info in enumerate(request.tasks):
             task_name = task_info.get("task", f"Task {task_idx + 1}")
-            
-            # Emit task_start event
-            start_payload = {
-                "type": "task_start",
-                "task_index": task_idx,
-                "task_name": task_name
-            }
-            yield f"data: {json.dumps(start_payload)}\n\n"
-            
-            # Execute task in background thread
-            task_res = await asyncio.to_thread(
-                run_single_task, task_idx, task_info, execution_context, session_id
-            )
-            results.append(task_res)
-            
-            # Emit task_result event
-            result_payload = {
-                "type": "task_result",
-                "task_index": task_idx,
-                "result": task_res
-            }
-            yield f"data: {json.dumps(result_payload)}\n\n"
-            
-            if task_res.get("status") == "error":
-                break
+            loop_items, for_each_ref = get_loop_context(task_info, execution_context)
+
+            if loop_items is not None:
+                total_items = len(loop_items)
+                if total_items == 0:
+                    start_payload = {
+                        "type": "task_start",
+                        "task_index": task_idx,
+                        "task_name": f"{task_name} (0 items)"
+                    }
+                    yield f"data: {json.dumps(start_payload)}\n\n"
+                    skip_res = {
+                        "task": f"{task_name} (0 items)",
+                        "real_task_name": task_name,
+                        "command": "noop",
+                        "output": json.dumps({"status": "skipped", "message": f"0 items found in {for_each_ref}"}),
+                        "error": "",
+                        "summary": "Loop skipped: 0 items returned from upstream task.",
+                        "status": "success"
+                    }
+                    results.append(skip_res)
+                    yield f"data: {json.dumps({'type': 'task_result', 'task_index': task_idx, 'result': skip_res})}\n\n"
+                    continue
+
+                # Emit task_start for the loop task
+                start_payload = {
+                    "type": "task_start",
+                    "task_index": task_idx,
+                    "task_name": f"{task_name} (Looping {total_items} items)"
+                }
+                yield f"data: {json.dumps(start_payload)}\n\n"
+
+                iter_results = []
+                loop_failed = False
+                for i, item in enumerate(loop_items):
+                    item_label = item.get("login") or item.get("id") if isinstance(item, dict) else str(item)
+                    iter_task_info = {
+                        "task": f"{task_name} [{i+1}/{total_items}: {item_label}]",
+                        "real_task_name": task_name,
+                        "data": build_iteration_data(task_info.get("data", {}), item, for_each_ref)
+                    }
+                    iter_res = await asyncio.to_thread(
+                        run_single_task, task_idx, iter_task_info, execution_context, session_id
+                    )
+                    iter_results.append(iter_res)
+                    if iter_res.get("status") == "error":
+                        loop_failed = True
+                        break
+
+                all_success = all(r.get("status") == "success" for r in iter_results)
+                succ_count = sum(1 for r in iter_results if r.get("status") == "success")
+                fail_count = sum(1 for r in iter_results if r.get("status") == "error")
+                summary_text = (
+                    f"Status: {'Completed successfully' if all_success else 'Finished with errors'}\n"
+                    f"Total items processed: {len(iter_results)} of {total_items}\n"
+                    f"Succeeded: {succ_count}\n"
+                    f"Failed: {fail_count}"
+                )
+                combined_output = "\n".join(
+                    f"[{r.get('task')}]: {r.get('output') or r.get('error')}"
+                    for r in iter_results
+                )
+                consolidated_res = {
+                    "task": f"{task_name} ({len(iter_results)} items processed)",
+                    "real_task_name": task_name,
+                    "command": f"for item in {for_each_ref}: {task_name} (x{len(iter_results)})",
+                    "output": combined_output,
+                    "error": "\n".join(r.get("error", "") for r in iter_results if r.get("error")),
+                    "summary": summary_text,
+                    "status": "success" if all_success else "error",
+                    "iterations": iter_results
+                }
+                results.append(consolidated_res)
+
+                # Emit task_result with consolidated status
+                result_payload = {
+                    "type": "task_result",
+                    "task_index": task_idx,
+                    "result": consolidated_res
+                }
+                yield f"data: {json.dumps(result_payload)}\n\n"
+
+                if loop_failed:
+                    break
+
+                if request.pause and task_info != request.tasks[-1]:
+                    yield f"data: {json.dumps({'type': 'paused', 'task_index': task_idx})}\n\n"
+                    break
+            else:
+                # Normal single task execution
+                start_payload = {
+                    "type": "task_start",
+                    "task_index": task_idx,
+                    "task_name": task_name
+                }
+                yield f"data: {json.dumps(start_payload)}\n\n"
                 
-            if request.pause and task_info != request.tasks[-1]:
-                yield f"data: {json.dumps({'type': 'paused', 'task_index': task_idx})}\n\n"
-                break
+                # Execute task in background thread
+                task_res = await asyncio.to_thread(
+                    run_single_task, task_idx, task_info, execution_context, session_id
+                )
+                results.append(task_res)
+                
+                # Emit task_result event
+                result_payload = {
+                    "type": "task_result",
+                    "task_index": task_idx,
+                    "result": task_res
+                }
+                yield f"data: {json.dumps(result_payload)}\n\n"
+                
+                if task_res.get("status") == "error":
+                    break
+                    
+                if request.pause and task_info != request.tasks[-1]:
+                    yield f"data: {json.dumps({'type': 'paused', 'task_index': task_idx})}\n\n"
+                    break
         
         has_failures = any(r.get("status") == "error" for r in results)
         content_msg = f"Execution stopped because a task failed. Please review the logs and try again." if has_failures else f"Execution completed for {len(results)} task(s)."
