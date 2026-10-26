@@ -344,14 +344,37 @@ def execute_task(task_name, data, tm=None, context=None, pause=True):
                 # Also support exact question string replacement: ${What is the new okta group name?*}
                 command = command.replace(f"${{{q}}}", str(ans))
                 
-        # Support context variable replacement (e.g. ${Create Okta Group.id})
+        # Support context variable replacement (e.g. ${Create Okta Group.id} or ${Summarize To Content})
         matches = re.findall(r'\$\{([^}]+)\}', command)
         for match in matches:
             if '.' in match:
                 ref_task, ref_key = match.split('.', 1)
+                # Exact match first
                 if ref_task in context and isinstance(context[ref_task], dict):
                     val = context[ref_task].get(ref_key, "")
                     command = command.replace(f"${{{match}}}", str(val))
+                else:
+                    # Fuzzy match: case/space insensitive task name
+                    norm = lambda s: re.sub(r'[^a-z0-9]', '', s.lower())
+                    for ctx_key, ctx_val in context.items():
+                        if norm(ctx_key) == norm(ref_task) and isinstance(ctx_val, dict):
+                            val = ctx_val.get(ref_key, "")
+                            command = command.replace(f"${{{match}}}", str(val))
+                            break
+            else:
+                # Bare task reference: ${Task Name} — substitute full output
+                val = None
+                if match in context:
+                    val = context[match]
+                else:
+                    norm = lambda s: re.sub(r'[^a-z0-9]', '', s.lower())
+                    for ctx_key, ctx_val in context.items():
+                        if norm(ctx_key) == norm(match):
+                            val = ctx_val
+                            break
+                if val is not None:
+                    substituted = json.dumps(val) if isinstance(val, dict) else str(val)
+                    command = command.replace(f"${{{match}}}", substituted)
         
         # If the command template didn't use variable substitution, fallback to appending the JSON string
         if "${" not in command_template:
@@ -360,20 +383,18 @@ def execute_task(task_name, data, tm=None, context=None, pause=True):
             
         cmd_args = []
     else:
-        cmd_list = list(data.values())
+        cmd_list = [v for v in data.values() if v and str(v).strip()]
         if not cmd_list:
             print("❌ No command to run.")
             return
-        command = cmd_list[0]
-        cmd_args = cmd_list[1:]
+        # Build a proper shell string so all args are correctly quoted
+        command = " ".join(shlex.quote(str(a)) for a in cmd_list)
+        cmd_args = []
 
     try:
-        if command_template:
+        if command_template or not cmd_args:
             print(f"▶️ Executing: {command}\n")
             result = subprocess.run(command, capture_output=True, shell=True, text=True)
-        else:
-            print(f"▶️ Executing: {command} {' '.join(cmd_args)}\n")
-            result = subprocess.run([command] + cmd_args, capture_output=True, shell=True, text=True)
         output = result.stdout.strip()
         error = result.stderr.strip()
         print("📤 Output:")
