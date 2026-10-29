@@ -7,8 +7,9 @@ import time
 import logging
 from logging.handlers import RotatingFileHandler
 import asyncio
-from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import RedirectResponse, FileResponse, StreamingResponse
+import tempfile
+from fastapi import FastAPI, HTTPException, Request, UploadFile, File
+from fastapi.responses import RedirectResponse, FileResponse, StreamingResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
 from pydantic import BaseModel
@@ -406,6 +407,130 @@ def get_downloads():
                     })
     return {"downloads": downloads}
 
+# ────────────────── Speech-to-Text & Transcribe Endpoints ──────────────────
+
+# Compatibility patch for PyAV 18/19 with faster-whisper
+try:
+    import av
+    _orig_av_open = av.open
+    def _patched_av_open(*args, **kwargs):
+        kwargs.pop("metadata_errors", None)
+        return _orig_av_open(*args, **kwargs)
+    av.open = _patched_av_open
+except Exception:
+    pass
+
+_whisper_model = None
+
+def get_whisper_model():
+    """Lazy-load faster-whisper model (base.en) if faster-whisper is installed."""
+    global _whisper_model
+    if _whisper_model is None:
+        try:
+            from faster_whisper import WhisperModel
+            _whisper_model = WhisperModel("base.en", device="auto", compute_type="auto")
+            access_logger.info("faster-whisper model loaded successfully.")
+        except Exception as e:
+            access_logger.warning(f"faster-whisper not initialized: {e}")
+            return None
+    return _whisper_model
+
+def transcribe_audio_file(file_path: str, mime_type: str = "audio/wav") -> str:
+    """Transcribe an audio file using faster-whisper, falling back to Gemini SDK."""
+    model = get_whisper_model()
+    if model is not None:
+        try:
+            segments, info = model.transcribe(file_path, beam_size=5)
+            text = " ".join([seg.text.strip() for seg in segments]).strip()
+            if text:
+                access_logger.info(f"[faster-whisper] Transcribed: {text[:80]}...")
+                return text
+        except Exception as e:
+            access_logger.error(f"faster-whisper transcription error: {e}")
+
+    # Fallback to Gemini multimodal audio transcription
+    try:
+        from google.genai import types
+        with open(file_path, "rb") as f:
+            audio_bytes = f.read()
+
+        audio_part = types.Part.from_bytes(data=audio_bytes, mime_type=mime_type or "audio/wav")
+        response = task_run.client.models.generate_content(
+            model=task_run.args.model,
+            contents=[
+                "Transcribe this spoken audio accurately into English text. Output ONLY the transcribed words, without any explanations, prefixes, or quotes.",
+                audio_part
+            ]
+        )
+        text = task_run.get_response_text(response).strip()
+        access_logger.info(f"[gemini-transcribe] Transcribed: {text[:80]}...")
+        return text
+    except Exception as e:
+        access_logger.error(f"Gemini audio transcription fallback failed: {e}")
+        return ""
+
+@app.post("/transcribe")
+@app.post("/api/transcribe")
+async def transcribe_audio_endpoint(file: Optional[UploadFile] = File(None)):
+    """Transcribe uploaded audio from the client browser using faster-whisper or Gemini."""
+    if not file:
+        raise HTTPException(status_code=400, detail="No audio file uploaded.")
+
+    content_type = file.content_type or "audio/wav"
+    ext = os.path.splitext(file.filename or "")[1] or ".wav"
+    with tempfile.NamedTemporaryFile(suffix=ext, delete=False) as tmp_f:
+        audio_content = await file.read()
+        tmp_f.write(audio_content)
+        tmp_path = tmp_f.name
+
+    try:
+        text = transcribe_audio_file(tmp_path, mime_type=content_type)
+        return {"text": text, "said": text, "status": "success"}
+    finally:
+        try:
+            os.remove(tmp_path)
+        except Exception:
+            pass
+
+@app.get("/speak")
+@app.get("/api/speak")
+def speak_get_endpoint():
+    """Capture from local microphone (if available) and transcribe with faster-whisper."""
+    try:
+        import speech_recognition as sr
+        recognizer = sr.Recognizer()
+        with sr.Microphone() as source:
+            recognizer.adjust_for_ambient_noise(source, duration=0.2)
+            audio = recognizer.listen(source, timeout=4, phrase_time_limit=15)
+
+        with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp_f:
+            tmp_f.write(audio.get_wav_data())
+            tmp_path = tmp_f.name
+
+        try:
+            text = transcribe_audio_file(tmp_path, mime_type="audio/wav")
+            return {"said": text, "text": text, "status": "success"}
+        finally:
+            try:
+                os.remove(tmp_path)
+            except Exception:
+                pass
+    except Exception as e:
+        return {
+            "said": "",
+            "text": "",
+            "status": "error",
+            "message": f"Hardware microphone unavailable: {str(e)}. Use POST /transcribe with audio recorded in the browser."
+        }
+
+@app.post("/speak")
+@app.post("/api/speak")
+async def speak_post_endpoint(file: Optional[UploadFile] = File(None)):
+    """Handle speech POST endpoint with uploaded audio file."""
+    if file:
+        return await transcribe_audio_endpoint(file)
+    return speak_get_endpoint()
+
 @app.get("/api/history")
 def get_legacy_history():
     """Compatibility endpoint for /api/history."""
@@ -734,8 +859,12 @@ def run_single_task(task_idx: int, task_info: Dict[str, Any], execution_context:
                 execution_context[task_name] = parsed_output
                 execution_context[task_name.lower()] = parsed_output
         
-        # If auto_summarize is true, summarize with Gemini
+        # If auto_summarize is true, summarize with Gemini (strictly disabled for snapshots/comparisons)
         auto_summarize = task_config.get("auto_summarize", False) if task_config else False
+        is_sensitive_task = any(kw in task_name.lower() for kw in ["snapshot", "compare", "diff", "download", "zip"])
+        if is_sensitive_task:
+            auto_summarize = False
+
         summary = None
         if auto_summarize and output:
             summary_prompt = (

@@ -45,7 +45,7 @@
     "print(json.dumps({\"status\": \"completed\", \"snapshot\": snap, \"recreated_deleted\": len(created), \"updated_modified\": len(updated), \"untouched_skipped\": len(skipped), \"errors\": errors}))",
     "'"
   ],
-  "auto_summarize": true,
+  "auto_summarize": false,
   "questions": [
     "What is the snapshot file path or tag name to restore from? (e.g. 'before', 'snapshots/users_snapshot_before.json')*"
   ]

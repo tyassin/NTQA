@@ -1,15 +1,17 @@
 {
-    "task_name": "Assign User to Group",
-    "description": "Assign an existing Okta user to an Okta group using user ID, login, or email.",
-    "command": [
-        "curl -sS -X PUT \\",
-        "  -H \"Accept: application/json\" \\",
-        "  -H \"Content-Type: application/json\" \\",
-        "  -H \"Authorization: SSWS $OKTA_API_TOKEN\" \\",
-        "  \"$OKTA_URL/api/v1/groups/${answer1}/users/${answer2}\""
-    ],
-    "questions": [
-        "What is the ID of the Okta group? (If a group was just created or selected, answer with exactly '${Create Okta Group.id}' or '${Select Group By Name.id}'. Otherwise, provide the actual ID)*",
-        "What is the email or ID of the user to assign? (If a user was just created, answer with exactly '${Create Okta User.id}'. Otherwise, provide the email or ID)*"
-    ]
+  "task_name": "Assign User to Group",
+  "description": "Assign one or more Okta users to an Okta group using user ID, list of IDs, login, or email.",
+  "command": [
+    "GROUP_ARG=\"${answer1}\"\nGROUP_ID=$(echo \"$GROUP_ARG\" | tr -d \" \t\r\n\\\"'[]\")\n\nif [[ ! \"$GROUP_ID\" =~ ^00g ]] || [ ${#GROUP_ID} -lt 15 ]; then\n  RESOLVED_GID=$(curl -sS -G \"$OKTA_URL/api/v1/groups\" \\\n    -H \"Accept: application/json\" \\\n    -H \"Authorization: SSWS $OKTA_API_TOKEN\" \\\n    --data-urlencode \"q=$GROUP_ARG\" | python3 -c '\nimport sys, json\ntry:\n    d = json.load(sys.stdin)\n    name = \"\"\"\"\"\".strip().lower()\n    match = next((g for g in d if g.get(\"profile\", {}).get(\"name\", \"\").strip().lower() == name), d[0] if d else None)\n    print(match[\"id\"] if match else \"\")\nexcept:\n    print(\"\")\n')\n  [ -n \"$RESOLVED_GID\" ] && GROUP_ID=\"$RESOLVED_GID\"\nfi\n\nRAW_USERS=\"${answer2}\"\nUIDS=$(echo \"$RAW_USERS\" | grep -oE \"00u[a-zA-Z0-9]+\")\n\nif [ -z \"$UIDS\" ]; then\n  TOKENS=$(echo \"$RAW_USERS\" | tr \",;[]\\\"'\" \"\\n\")\n  for tok in $TOKENS; do\n    tok=$(echo \"$tok\" | tr -d \" \t\r\n\")\n    [ -z \"$tok\" ] && continue\n    if [[ \"$tok\" =~ ^00u ]]; then\n      UIDS=\"$UIDS $tok\"\n    else\n      LOOKUP=$(curl -sS -G \"$OKTA_URL/api/v1/users\" \\\n        -H \"Accept: application/json\" \\\n        -H \"Authorization: SSWS $OKTA_API_TOKEN\" \\\n        --data-urlencode \"q=$tok\" | python3 -c '\nimport sys, json\ntry:\n    d = json.load(sys.stdin)\n    print(d[0][\"id\"] if isinstance(d, list) and d else \"\")\nexcept:\n    print(\"\")\n')\n      [ -n \"$LOOKUP\" ] && UIDS=\"$UIDS $LOOKUP\"\n    fi\n  done\nfi\n\nCOUNT=0\nASSIGNED=()\nfor uid in $UIDS; do\n  [ -z \"$uid\" ] && continue\n  RES=$(curl -sS -o /dev/null -w \"%{http_code}\" -X PUT \\\n    -H \"Accept: application/json\" \\\n    -H \"Content-Type: application/json\" \\\n    -H \"Authorization: SSWS $OKTA_API_TOKEN\" \\\n    \"$OKTA_URL/api/v1/groups/$GROUP_ID/users/$uid\")\n  if [ \"$RES\" = \"204\" ] || [ \"$RES\" = \"200\" ]; then\n    ASSIGNED+=(\"$uid\")\n    COUNT=$((COUNT + 1))\n    echo \"  \u2022 Assigned $uid to group $GROUP_ID\"\n  else\n    echo \"  \u2022 Failed $uid (HTTP $RES)\"\n  fi\ndone\n\necho \"Assigned $COUNT user(s) to group $GROUP_ID.\"\npython3 -c '\nimport sys, json\ngroup_id = sys.argv[1]\ncount = int(sys.argv[2])\nusers = sys.argv[3:]\nprint(json.dumps({\n    \"status\": \"success\" if count > 0 else \"error\",\n    \"group_id\": group_id,\n    \"assigned_count\": count,\n    \"user_ids\": users\n}))\n' \"$GROUP_ID\" \"$COUNT\" \"${ASSIGNED[@]}\""
+  ],
+  "questions": [
+    "What is the ID of the Okta group? (If a group was just created or selected, answer with exactly '${Create Okta Group.id}' or '${Select Group By Name.id}'. Otherwise, provide the actual ID)*",
+    "What is the email or ID of the user to assign? (If a user was just created, answer with exactly '${Create Okta User.id}'. Otherwise, provide the email or ID)*"
+  ],
+  "output_schema": {
+    "status": "success",
+    "group_id": "",
+    "assigned_count": 0,
+    "user_ids": []
+  }
 }

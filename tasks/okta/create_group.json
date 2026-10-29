@@ -1,16 +1,11 @@
 {
   "task_name": "Create Okta Group",
-  "description": "Create a new OKTA Group!",
+  "description": "Create a new OKTA Group! If a group with the same name already exists, returns its ID.",
   "command": [
-    "curl -sS -X POST \\",
-    "  -H \"Accept: application/json\" \\",
-    "  -H \"Content-Type: application/json\" \\",
-    "  -H \"Authorization: SSWS $OKTA_API_TOKEN\" \\",
-    "  -d '{\"profile\": {\"name\": \"${answer1}\", \"description\": \"${answer2}\"}}' \\",
-    "  \"$OKTA_URL/api/v1/groups\""
+    "RES=$(curl -sS -X POST \\\n  -H \"Accept: application/json\" \\\n  -H \"Content-Type: application/json\" \\\n  -H \"Authorization: SSWS $OKTA_API_TOKEN\" \\\n  -d '{\"profile\": {\"name\": \"${answer1}\", \"description\": \"${answer2}\"}}' \\\n  \"$OKTA_URL/api/v1/groups\") ; \\\necho \"$RES\" | python3 -c '\nimport sys, os, json, subprocess\ntext = sys.stdin.read().strip()\ntry:\n    data = json.loads(text)\nexcept:\n    data = {}\nif isinstance(data, dict) and \"id\" in data:\n    print(json.dumps(data))\nelif \"already exists\" in text.lower():\n    name = \"\"\"${answer1}\"\"\".strip()\n    token = os.environ.get(\"OKTA_API_TOKEN\", \"\")\n    okta_url = os.environ.get(\"OKTA_URL\", \"\").rstrip(\"/\")\n    cmd = [\"curl\", \"-sS\", \"-G\", f\"{okta_url}/api/v1/groups\", \"-H\", f\"Authorization: SSWS {token}\", \"-H\", \"Accept: application/json\", \"--data-urlencode\", f\"q={name}\"]\n    r = subprocess.run(cmd, capture_output=True, text=True)\n    try:\n        groups = json.loads(r.stdout)\n        match = next((g for g in groups if g.get(\"profile\", {}).get(\"name\", \"\").strip().lower() == name.lower()), groups[0] if groups else None)\n        if match:\n            print(json.dumps(match))\n        else:\n            print(text)\n    except:\n        print(text)\nelse:\n    print(text)\n'"
   ],
   "questions": [
     "What is the new okta group name?*",
-    "What is the new okta group description?*"
+    "What is the new okta group description?"
   ]
 }

@@ -11,6 +11,7 @@ mine/
 .idea/
 snapshots/
 newCleaned/
+p312/
 *.db
 prompts mine.txt
 req_before_upgrade.txt
@@ -26,4 +27,4 @@ rubiks.html
 tarek_diff.csv
 trajectorySummaries_backup_antigravity_ide_*.txt
 users_difference_*.csv
-static/downloads/math_operation.html
+static/downloads/*
